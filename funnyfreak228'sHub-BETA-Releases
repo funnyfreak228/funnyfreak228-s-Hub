@@ -7,10 +7,10 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 local VirtualUser = game:GetService("VirtualUser")
 
 local Window = Fluent:CreateWindow({
-    Title = "funnyfreak228's Hub | BETA 1.0.5",
+    Title = "funnyfreak228's Hub | BETA 1.0.6",
     SubTitle = "by @RealFreakxNil",
     TabWidth = 160,
-    Size = UDim2.fromOffset(500, 400),
+    Size = UDim2.fromOffset(480, 380),
     Acrylic = false, 
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl
@@ -827,7 +827,6 @@ spawn(function()
         end
     end
 end)
-
 --- auto farm loop wow!
 spawn(function()
     local TweenService = game:GetService("TweenService")
@@ -837,6 +836,7 @@ spawn(function()
 
     local safeplace = 12
     local stay = 20  
+    local near = 240 
 
     RunService.Stepped:Connect(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
@@ -850,17 +850,20 @@ spawn(function()
         end
     end)
 
-    local function GetNearestMobs(origin, maxCount, targetName)
+    local function GetNearestMobs(origin, maxCount, targetName, radius)
         local mobs = {}
         for _, v in pairs(workspace.Enemies:GetChildren()) do
             if v.Name == targetName
             and v:FindFirstChild("Humanoid")
             and v:FindFirstChild("HumanoidRootPart")
             and v.Humanoid.Health > 0 then
-                table.insert(mobs, {
-                    mob = v,
-                    dist = (v.HumanoidRootPart.Position - origin).Magnitude
-                })
+                local dist = (v.HumanoidRootPart.Position - origin).Magnitude
+                if dist <= radius then
+                    table.insert(mobs, {
+                        mob = v,
+                        dist = dist
+                    })
+                end
             end
         end
 
@@ -903,13 +906,14 @@ spawn(function()
     end
 
     local lastPlayerMove = 0
-    local PLAYER_MOVE_COOLDOWN = 0
+    local lockedPosition = nil
 
     while task.wait() do
         if not _G.Settings.Main["Auto Farm"] then 
             if LP.Character and LP.Character:FindFirstChild("Humanoid") then
                 LP.Character.Humanoid.PlatformStand = false
             end
+            lockedPosition = nil
             continue 
         end
 
@@ -921,6 +925,7 @@ spawn(function()
             CheckQuest()
 
             if not LP.PlayerGui.Main.Quest.Visible then
+                lockedPosition = nil
                 topos(CFrameQuest)
                 if (CFrameQuest.Position - LP.Character.HumanoidRootPart.Position).Magnitude <= 20 then
                     RS.Remotes.CommF_:InvokeServer("StartQuest", NameQuest, LevelQuest)
@@ -931,6 +936,7 @@ spawn(function()
 
                 if workspace.Enemies:FindFirstChild(Mon) then
                     if not _G.CurrentMobGroup or not _G.MobGroupLocked then
+                        lockedPosition = nil
                         local nearestMob = nil
                         local nearestDist = math.huge
                         
@@ -951,8 +957,9 @@ spawn(function()
                         if v then
                             local potentialGroup = GetNearestMobs(
                                 v.HumanoidRootPart.Position,
-                                3,
-                                Mon
+                                2, 
+                                Mon,
+                                near
                             )
                             
                             if #potentialGroup > 0 then
@@ -970,7 +977,8 @@ spawn(function()
                                 _G.CurrentMobGroup = potentialGroup
                                 _G.MobGroupLocked = true
                                 
-                                local targetCF = v.HumanoidRootPart.CFrame * CFrame.new(0, stay, 0) 
+                                local targetCF = v.HumanoidRootPart.CFrame * CFrame.new(0, stay, 0)
+                                lockedPosition = targetCF
                                 if (LP.Character.HumanoidRootPart.Position - targetCF.Position).Magnitude > 10 then
                                     topos(targetCF)
                                     task.wait(0.2)
@@ -987,6 +995,7 @@ spawn(function()
                             if not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then break end
                             LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             LP.Character.Humanoid.PlatformStand = false
+                            
                             local primaryTarget = nil
                             for _, mob in ipairs(_G.CurrentMobGroup) do
                                 if mob and mob.Parent and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
@@ -997,14 +1006,10 @@ spawn(function()
                             
                             if not primaryTarget then break end
 
-                            local currentTime = tick()
-                            if currentTime - lastPlayerMove >= PLAYER_MOVE_COOLDOWN then
-                                local targetCF = primaryTarget.HumanoidRootPart.CFrame * CFrame.new(0, stay, 0) 
-                                local distance = (LP.Character.HumanoidRootPart.Position - targetCF.Position).Magnitude
-                                
-                                if distance > 50 then 
-                                    topos(targetCF)
-                                    lastPlayerMove = currentTime
+                            if lockedPosition then
+                                local distance = (LP.Character.HumanoidRootPart.Position - lockedPosition.Position).Magnitude
+                                if distance > 15 then
+                                    LP.Character.HumanoidRootPart.CFrame = lockedPosition
                                 end
                             end
 
@@ -1032,6 +1037,7 @@ spawn(function()
                             else
                                 _G.CurrentMobGroup = nil
                                 _G.MobGroupLocked = false
+                                lockedPosition = nil
                                 break
                             end
 
@@ -1039,10 +1045,12 @@ spawn(function()
 
                         _G.CurrentMobGroup = nil
                         _G.MobGroupLocked = false
+                        lockedPosition = nil
                     end
                 else
                     _G.CurrentMobGroup = nil
                     _G.MobGroupLocked = false
+                    lockedPosition = nil
                     topos(CFrameMon)
                 end
             end
@@ -1198,10 +1206,13 @@ end)
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
     Combat = Window:AddTab({ Title = "Combat", Icon = "sword" }),
+    Raid = Window:AddTab({ Title = "Raid", Icon = "factory" }),
+    Dungeons = Window:AddTab({ Title = "Dungeons", Icon = "skull" }),
+    Shop = Window:AddTab({ Title = "Shop", Icon = "shopping-cart" }),
     Stats = Window:AddTab({ Title = "Stats", Icon = "bar-chart" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }),
     MiscTab = Window:AddTab({ Title = "Misc", Icon = "package" }),
-    Info = Window:AddTab({ Title = "Info", Icon = "info" })
+    Info = Window:AddTab({ Title = "Info", Icon = "info" }) --- Always last pls ;p
 }
 
 local StatusParagraph = Tabs.Main:AddParagraph({
@@ -1235,6 +1246,113 @@ Tabs.Main:AddDropdown("SelectWeapon", {
         _G.Settings.Main["Select Weapon"] = Value
     end
 })
+
+Tabs.Shop:AddParagraph({
+    Title = "Swords",
+    Content = "Sword Section"
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Cutlass",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Cutlass")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Katana",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Katana")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Iron Mace",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Iron Mace")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Dual Katana",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Dual Katana")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Triple Katana",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Triple Katana")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Pipe",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Pipe")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Bisento",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Bisento")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Dual-Headed Blade",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Dual-Headed Blade")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Soul Cane",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Soul Cane")
+    end
+})
+
+Tabs.Shop:AddParagraph({
+    Title = "Skills",
+    Content = "Skill Section"
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Aura",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Aura")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Sky Jump",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Air Jump")
+    end
+})
+
+Tabs.Shop:AddButton({
+    Title = "Buy Flash Step",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Flash Step")
+    end
+})
+
+
+
+Tabs.Raid:AddParagraph({
+    Title = "Not Added :(",
+    Content = "This feature is not added yet <3"
+})
+
+Tabs.Dungeons:AddParagraph({
+    Title = "Not Added :(",
+    Content = "This feature is not added yet <3"
+})
+
 
 Tabs.Main:AddParagraph({
     Title = "Boss Related",
@@ -1435,7 +1553,7 @@ end)
 
 Tabs.Info:AddParagraph({
     Title = "Script Information",
-    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.5\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob"
+    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.6\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
 })
 
 local function updateStatusDisplay()
