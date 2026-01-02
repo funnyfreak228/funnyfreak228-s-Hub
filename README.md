@@ -1,4 +1,4 @@
-# funnyfreak228-s-Hub
+# funnyfreak228-s-Hub (BETA 1.0.6 Released!)
 Open-Source Bloxfruits script! (Contributions are appriciated)
 
 # Load the script
