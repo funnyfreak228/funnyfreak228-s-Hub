@@ -1203,6 +1203,116 @@ spawn(function()
     end
 end)
 
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local camera = workspace.CurrentCamera
+
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.fromOffset(60, 60)
+button.Position = UDim2.fromOffset(20, 20)
+button.BackgroundTransparency = 0.3
+button.BackgroundColor3 = Color3.fromRGB(45, 45, 48)
+button.BorderSizePixel = 0
+button.Text = "F"
+button.TextColor3 = Color3.new(1, 1, 1)
+button.TextSize = 24
+button.Font = Enum.Font.GothamBold
+button.Parent = gui
+
+Instance.new("UICorner", button).CornerRadius = UDim.new(1, 0)
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(76, 76, 76)
+stroke.Thickness = 2
+stroke.Parent = button
+
+local scale = Instance.new("UIScale")
+scale.Parent = button
+
+local function updateScale()
+	local v = camera.ViewportSize
+	scale.Scale = math.clamp(math.min(v.X, v.Y) / 720, 0.75, 1.25)
+end
+
+updateScale()
+camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale)
+
+local dragging = false
+local dragInput = nil
+local dragStart
+local startPos
+local moved = false
+local originalSize = button.Size
+
+local function clamp(pos)
+	local v = camera.ViewportSize
+	local s = button.AbsoluteSize
+	return UDim2.fromOffset(
+		math.clamp(pos.X.Offset, 0, v.X - s.X),
+		math.clamp(pos.Y.Offset, 0, v.Y - s.Y)
+	)
+end
+
+button.InputBegan:Connect(function(input)
+	if dragging then return end
+	if input.UserInputType ~= Enum.UserInputType.Touch
+	and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+
+	dragging = true
+	dragInput = input
+	dragStart = input.Position
+	startPos = button.Position
+	moved = false
+
+	TweenService:Create(
+		button,
+		TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{Size = UDim2.fromOffset(50, 50)}
+	):Play()
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if not dragging then return end
+	if input ~= dragInput then return end
+
+	local delta = input.Position - dragStart
+	moved = delta.Magnitude > 5
+
+	button.Position = clamp(UDim2.fromOffset(
+		startPos.X.Offset + delta.X,
+		startPos.Y.Offset + delta.Y
+	))
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input ~= dragInput then return end
+
+	dragging = false
+	dragInput = nil
+
+	TweenService:Create(
+		button,
+		TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+		{Size = originalSize}
+	):Play()
+
+	if not moved then
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
+		task.delay(0.15, function()
+			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.LeftControl, false, game)
+		end)
+	end
+end)
+
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
     Combat = Window:AddTab({ Title = "Combat", Icon = "sword" }),
