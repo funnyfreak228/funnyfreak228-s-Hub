@@ -1553,13 +1553,10 @@ Tabs.Combat:AddSlider("AuraRange", {
     end
 })
 
-Tabs.Stats:AddToggle("AutoStats", {
-    Title = "Auto Stats",
-    Default = false,
-    Callback = function(Value)
-        _G.Settings.Stats["Enabled"] = Value
-    end
-})
+
+_G.SelectedStat = "Melee"
+_G.AutoStats = false
+
 
 Tabs.Stats:AddDropdown("SelectStat", {
     Title = "Pick Stat",
@@ -1567,9 +1564,44 @@ Tabs.Stats:AddDropdown("SelectStat", {
     Multi = false,
     Default = "Melee",
     Callback = function(Value)
-        _G.Settings.Stats["Select Stat"] = Value
+        _G.SelectedStat = Value
     end
 })
+
+
+Tabs.Stats:AddToggle("AutoStats", {
+    Title = "Auto Stats",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoStats = Value
+        
+        if Value then
+            task.spawn(function()
+                while _G.AutoStats do
+                    task.wait(0.2)
+                    
+                    pcall(function()
+                        
+                        local TargetStat = _G.SelectedStat
+                        if TargetStat == "Demon Fruit" then 
+                            TargetStat = "Blox Fruit" 
+                        end
+                        
+                        
+                        local Points = game.Players.LocalPlayer.Data:FindFirstChild("Points") or 
+                                       game.Players.LocalPlayer.Data:FindFirstChild("StatsPoints")
+                        
+                        
+                        if Points and Points.Value > 0 then
+                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AddPoint", TargetStat, 3)
+                        end
+                    end)
+                end
+            end)
+        end
+    end
+})
+
 
 Tabs.Settings:AddSlider("TweenSpeed", {
     Title = "Tween Speed",
