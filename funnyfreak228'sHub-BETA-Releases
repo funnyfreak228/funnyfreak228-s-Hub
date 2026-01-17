@@ -1330,10 +1330,7 @@ local StatusParagraph = Tabs.Main:AddParagraph({
     Content = "Status: 🟢\nTime Played: 00:00:00\nState: Idle"
 })
 
-Tabs.Main:AddParagraph({
-    Title = "Farm Related",
-    Content = "Find Farm Related Stuff!"
-})
+Tabs.Main:AddSection("Auto Farming")
 
 Tabs.Main:AddToggle("AutoFarm", {
     Title = "Auto Farm Levels",
@@ -1357,10 +1354,8 @@ Tabs.Main:AddDropdown("SelectWeapon", {
     end
 })
 
-Tabs.Shop:AddParagraph({
-    Title = "Swords",
-    Content = "Sword Section"
-})
+Tabs.Shop:AddSection("Sword Section")
+
 
 Tabs.Shop:AddButton({
     Title = "Buy Cutlass",
@@ -1425,10 +1420,8 @@ Tabs.Shop:AddButton({
     end
 })
 
-Tabs.Shop:AddParagraph({
-    Title = "Skills",
-    Content = "Skill Section"
-})
+Tabs.Shop:AddSection("Skill Section")
+
 
 Tabs.Shop:AddButton({
     Title = "Buy Aura",
@@ -1464,10 +1457,8 @@ Tabs.Dungeons:AddParagraph({
 })
 
 
-Tabs.Main:AddParagraph({
-    Title = "Boss Related",
-    Content = "Boss Farming Features!"
-})
+Tabs.Main:AddSection("Boss Related")
+
 
 Tabs.Main:AddToggle("AutoFarmBoss", {
     Title = "Auto Boss Farm",
@@ -1505,10 +1496,8 @@ _G.UIElements.SelectBoss = Tabs.Main:AddDropdown("SelectBoss", {
     end
 })
 
-Tabs.Main:AddParagraph({
-    Title = "Chest Related",
-    Content = "Find Chest Related Stuff!"
-})
+Tabs.Main:AddSection("Chest Related")
+
 
 Tabs.Main:AddToggle("ChestFarm", {
     Title = "Chest Farm",
@@ -1531,6 +1520,8 @@ Tabs.Main:AddDropdown("SelectChestMode", {
         _G.Settings.Main["Chest Farm Mode"] = Value
     end
 })
+
+Tabs.Combat:AddSection("Kill Aura Related")
 
 Tabs.Combat:AddToggle("KillAura", {
     Title = "Kill Aura",
@@ -1583,9 +1574,9 @@ Tabs.Stats:AddDropdown("SelectStat", {
 Tabs.Settings:AddSlider("TweenSpeed", {
     Title = "Tween Speed",
     Description = "Control your tween speed",
-    Default = 200,
+    Default = 300,
     Min = 100,
-    Max = 250,
+    Max = 300,
     Rounding = 10,
     Callback = function(Value)
         _G.Settings.Setting["Tween Speed"] = Value
