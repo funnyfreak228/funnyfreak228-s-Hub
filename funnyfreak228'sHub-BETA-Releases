@@ -782,7 +782,7 @@ end)
 
 spawn(function()
     while task.wait(0.5) do
-        if _G.Settings.Main["Auto Farm"] or _G.Settings.Combat["Kill Aura"] or _G.Settings.Main["Auto Farm Boss"] or _G.Settings.Main["Auto Farm All Bosses"] then
+        if _G.Settings.Main["Auto Farm"] or _G.Settings.Main["Auto Farm Boss"] or _G.Settings.Main["Auto Farm All Bosses"] then
             pcall(function()
                 if not LP.Character then return end
                 
