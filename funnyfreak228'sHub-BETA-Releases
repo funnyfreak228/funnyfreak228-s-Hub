@@ -329,7 +329,7 @@ function CheckQuest()
             CFrameQuest = CFrame.new(5259, 37, 4050)
             CFrameMon = CFrame.new(5441, 42, 4950)
         end
-    elseif game.PlaceId == 4442272183 then
+    elseif game.PlaceId == 79091703265657 then
         if MyLevel == 700 or MyLevel <= 724 then
             Mon = "Raider"
             LevelQuest = 1
@@ -463,7 +463,7 @@ function CheckQuest()
             CFrameQuest = CFrame.new(-3054, 235, -10142)
             CFrameMon = CFrame.new(-3352, 285, -10534)
         end
-    elseif game.PlaceId == 7449423635 then
+    elseif game.PlaceId == 100117331123089 then
         if MyLevel == 1500 or MyLevel <= 1524 then
             Mon = "Pirate Millionaire"
             LevelQuest = 1
