@@ -751,14 +751,6 @@ spawn(function()
                 local Selected = _G.Settings.Main["Select Weapon"]
                 local ToolInHand = Character:FindFirstChildWhichIsA("Tool")
                 
-                if not ToolInHand or (not string.find(ToolInHand.ToolTip, Selected) and not string.find(ToolInHand.Name, Selected)) then
-                    for _, v in pairs(LP.Backpack:GetChildren()) do
-                        if v:IsA("Tool") and (string.find(v.ToolTip, Selected) or string.find(v.Name, Selected)) then
-                            Character.Humanoid:EquipTool(v)
-                            break
-                        end
-                    end
-                end
 
                 local MyPos = Character.HumanoidRootPart.Position
                 local Range = _G.Settings.Combat["Aura Range"] 
