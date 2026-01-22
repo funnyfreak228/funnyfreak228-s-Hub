@@ -169,6 +169,10 @@ end
 local function DamageUnit(Target)
     pcall(function()
         RS.Modules.Net["RE/RegisterAttack"]:FireServer(0)
+        RS.Modules.Net["RE/RegisterAttack"]:FireServer(1)
+        RS.Modules.Net["RE/RegisterAttack"]:FireServer(2)
+        RS.Modules.Net["RE/RegisterAttack"]:FireServer(3)
+        RS.Modules.Net["RE/RegisterAttack"]:FireServer(4)
         RS.Modules.Net["RE/RegisterHit"]:FireServer(Target.HumanoidRootPart, {})
     end)
 end
