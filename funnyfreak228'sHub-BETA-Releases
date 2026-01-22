@@ -1545,7 +1545,7 @@ Tabs.Combat:AddSection("Kill Aura Related")
 
 Tabs.Combat:AddToggle("KillAura", {
     Title = "Kill Aura",
-    Default = false,
+    Default = true,
     Callback = function(Value)
         _G.Settings.Combat["Kill Aura"] = Value
     end
@@ -1567,7 +1567,7 @@ Tabs.Combat:AddSlider("AuraRange", {
     Default = 25,
     Min = 10,
     Max = 60,
-    Rounding = 1,
+    Rounding = 0,
     Callback = function(Value)
         _G.Settings.Combat["Aura Range"] = Value
     end
