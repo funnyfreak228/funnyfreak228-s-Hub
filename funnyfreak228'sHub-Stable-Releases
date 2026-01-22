@@ -1710,7 +1710,7 @@ Tabs.Info:AddParagraph({
 })
 
 local function updateStatusDisplay()
-    local statusIcon = errorCount > 0 and "ðŸ”´" or "ðŸŸ¢"
+    local statusIcon = errorCount > 0 and "🔴" or "🟢"
     local errorText = errorCount > 0 and " (Errors: " .. errorCount .. ")" or ""
     
     local elapsed = tick() - startTime
@@ -1741,3 +1741,4 @@ spawn(function()
 end)
 
 Window:SelectTab(1)
+
