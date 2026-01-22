@@ -709,7 +709,7 @@ function PopulateBossList()
             "Cyborg",
             "Saber Expert"
         }
-    elseif game.PlaceId == 4442272183 then 
+    elseif game.PlaceId == 79091703265657 then 
         tableBoss = {
             "Diamond",
             "Jeremy",
@@ -722,7 +722,7 @@ function PopulateBossList()
             "Awakened Ice Admiral",
             "Tide Keeper"
         }
-    elseif game.PlaceId == 7449423635 then 
+    elseif game.PlaceId == 100117331123089 then 
         tableBoss = {
             "Stone",
             "Island Empress",
