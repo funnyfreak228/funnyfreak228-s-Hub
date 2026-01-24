@@ -33,7 +33,7 @@ local tableBoss = {}
 
 _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
-    Combat = {["Kill Aura"] = false, ["Aura Range"] = 25, ["Aura Target"] = "All"},
+    Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
     Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true},
     Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
 }
@@ -177,7 +177,46 @@ local function DamageUnit(Target)
     end)
 end
 
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local Client = Players.LocalPlayer
 
+local RegisterAttack = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack")
+local RegisterHit = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterHit")
+local enemyFolder = Workspace:WaitForChild("Enemies")
+
+local range = _G.Settings.Combat["Aura Range"]
+
+function Attack()
+    local targetData = {nil, {}}
+
+    for _, Enemy in pairs(enemyFolder:GetChildren()) do
+        local hrp = Enemy:FindFirstChild("HumanoidRootPart")
+        local hum = Enemy:FindFirstChild("Humanoid")
+
+        if hrp and hum and hum.Health > 0 then
+            if Client:DistanceFromCharacter(hrp.Position) < range then
+                if not targetData[1] then
+                    targetData[1] = hrp
+                end
+                
+                table.insert(targetData[2], {
+                    [1] = Enemy,
+                    [2] = hrp
+                })
+            end
+        end
+    end
+
+    if targetData[1] then
+        RegisterAttack:FireServer(0)
+        RegisterAttack:FireServer(1)
+        RegisterAttack:FireServer(2)
+        RegisterAttack:FireServer(3)
+        RegisterHit:FireServer(targetData[1], targetData[2])
+    end
+end
 
 function CheckQuest()
     MyLevel = LP.Data.Level.Value
@@ -764,7 +803,7 @@ spawn(function()
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                         if v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
                             if (v.HumanoidRootPart.Position - MyPos).Magnitude <= Range then
-                                DamageUnit(v)
+                                Attack()
                             end
                         end
                     end
@@ -831,7 +870,7 @@ spawn(function()
     local LP = Players.LocalPlayer
 
     local safeplace = 12
-    local stay = 20  
+    local stay = 30
     local near = 240 
 
     RunService.Stepped:Connect(function()
@@ -966,7 +1005,7 @@ spawn(function()
                                             topos(loadCF)
                                             task.wait(0.2)
                                         end
-                                        DamageUnit(mob)
+                                        Attack()
                                     end
                                 end
                                 
@@ -1017,7 +1056,7 @@ spawn(function()
                                 if mob and mob.Parent and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
                                     mob.HumanoidRootPart.CanCollide = false
                                     mob.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                    DamageUnit(mob)
+                                    Attack()
                                 end
                             end
 
