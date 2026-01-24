@@ -1603,7 +1603,7 @@ Tabs.Combat:AddDropdown("AuraTarget", {
 Tabs.Combat:AddSlider("AuraRange", {
     Title = "Aura Range",
     Description = "Distance for Kill Aura",
-    Default = 25,
+    Default = 60,
     Min = 10,
     Max = 60,
     Rounding = 0,
