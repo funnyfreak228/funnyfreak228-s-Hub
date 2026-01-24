@@ -5,9 +5,10 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 local VirtualUser = game:GetService("VirtualUser")
+local RunService = game:GetService("RunService")
 
 local Window = Fluent:CreateWindow({
-    Title = "funnyfreak228's Hub | Stable 1.0.6",
+    Title = "funnyfreak228's Hub | Stable 1.0.7",
     SubTitle = "by @RealFreakxNil",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 380),
@@ -33,7 +34,7 @@ local tableBoss = {}
 
 _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
-    Combat = {["Kill Aura"] = false, ["Aura Range"] = 25, ["Aura Target"] = "All"},
+    Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
     Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true},
     Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
 }
@@ -177,7 +178,46 @@ local function DamageUnit(Target)
     end)
 end
 
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local Client = Players.LocalPlayer
 
+local RegisterAttack = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack")
+local RegisterHit = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterHit")
+local enemyFolder = Workspace:WaitForChild("Enemies")
+
+local range = _G.Settings.Combat["Aura Range"]
+
+function Attack()
+    local targetData = {nil, {}}
+
+    for _, Enemy in pairs(enemyFolder:GetChildren()) do
+        local hrp = Enemy:FindFirstChild("HumanoidRootPart")
+        local hum = Enemy:FindFirstChild("Humanoid")
+
+        if hrp and hum and hum.Health > 0 then
+            if Client:DistanceFromCharacter(hrp.Position) < range then
+                if not targetData[1] then
+                    targetData[1] = hrp
+                end
+                
+                table.insert(targetData[2], {
+                    [1] = Enemy,
+                    [2] = hrp
+                })
+            end
+        end
+    end
+
+    if targetData[1] then
+        RegisterAttack:FireServer(0)
+        RegisterAttack:FireServer(1)
+        RegisterAttack:FireServer(2)
+        RegisterAttack:FireServer(3)
+        RegisterHit:FireServer(targetData[1], targetData[2])
+    end
+end
 
 function CheckQuest()
     MyLevel = LP.Data.Level.Value
@@ -764,7 +804,7 @@ spawn(function()
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                         if v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
                             if (v.HumanoidRootPart.Position - MyPos).Magnitude <= Range then
-                                DamageUnit(v)
+                                Attack()
                             end
                         end
                     end
@@ -823,236 +863,121 @@ spawn(function()
         end
     end
 end)
---- auto farm loop wow!
+
+--- farm loop wowwwwwwww (extra w's)
 spawn(function()
-    local TweenService = game:GetService("TweenService")
-    local RunService = game:GetService("RunService") 
-    local Players = game:GetService("Players")
-    local LP = Players.LocalPlayer
-
-    local safeplace = 12
-    local stay = 20  
-    local near = 240 
-
     RunService.Stepped:Connect(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
             local hrp = LP.Character:FindFirstChild("HumanoidRootPart")
-            local hum = LP.Character:FindFirstChild("Humanoid")
             if hrp then
-            LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-            LP.Character.Humanoid.PlatformStand = false
-            end
-           
-        end
-    end)
-
-    local function GetNearestMobs(origin, maxCount, targetName, radius)
-        local mobs = {}
-        for _, v in pairs(workspace.Enemies:GetChildren()) do
-            if v.Name == targetName
-            and v:FindFirstChild("Humanoid")
-            and v:FindFirstChild("HumanoidRootPart")
-            and v.Humanoid.Health > 0 then
-                local dist = (v.HumanoidRootPart.Position - origin).Magnitude
-                if dist <= radius then
-                    table.insert(mobs, {
-                        mob = v,
-                        dist = dist
-                    })
+                if not CurrentTween or CurrentTween.PlaybackState ~= Enum.PlaybackState.Playing then
+                    LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                    LP.Character.Humanoid.PlatformStand = false
                 end
             end
-        end
-
-        table.sort(mobs, function(a, b)
-            return a.dist < b.dist
-        end)
-
-        local result = {}
-        for i = 1, math.min(maxCount, #mobs) do
-            table.insert(result, mobs[i].mob)
-        end
-        return result
-    end
-
-    local function BringMobsToPlayer(mobs, playerCFrame)
-        for i, mob in ipairs(mobs) do
-            if mob and mob.Parent and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+            
+            if _G.Settings.Setting["Bring Mob"] and Mon then
                 pcall(function()
-                    mob.HumanoidRootPart.CanCollide = false
-                    mob.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                    mob.Humanoid.WalkSpeed = 0
-                    mob.Humanoid.JumpPower = 0
-                    
-                    local dist = (mob.HumanoidRootPart.Position - playerCFrame.Position).Magnitude
-                    local time = dist / 200 
-                    
-                    local angle = (i - 1) * (360 / #mobs)
-                    
-                    local offset = CFrame.Angles(0, math.rad(angle), 0) * CFrame.new(0, -2, safeplace)
-                    local targetCF = CFrame.new(playerCFrame.Position.X, playerCFrame.Position.Y, playerCFrame.Position.Z) * offset
-                    
-                    TweenService:Create(
-                        mob.HumanoidRootPart,
-                        TweenInfo.new(time, Enum.EasingStyle.Linear),
-                        {CFrame = targetCF}
-                    ):Play()
+                    for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                        if v.Name == Mon and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                            v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                            v.HumanoidRootPart.CanCollide = false
+                            v.Humanoid.WalkSpeed = 0
+                            v.Humanoid.JumpPower = 0
+                            v.Head.CanCollide = false
+                            v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                            
+                            if v.Humanoid:FindFirstChild("Animator") then
+                                v.Humanoid.Animator:Destroy()
+                            end
+                        end
+                    end
                 end)
             end
         end
-    end
+    end)
 
-    local lastPlayerMove = 0
-    local lockedPosition = nil
-
-    while task.wait() do
-        if not _G.Settings.Main["Auto Farm"] then 
-            if LP.Character and LP.Character:FindFirstChild("Humanoid") then
-                LP.Character.Humanoid.PlatformStand = false
-            end
-            lockedPosition = nil
-            continue 
-        end
-
-        pcall(function()
-            if not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then
-                return
-            end
-
-            CheckQuest()
-
-            if not LP.PlayerGui.Main.Quest.Visible then
-                lockedPosition = nil
-                topos(CFrameQuest)
-                if (CFrameQuest.Position - LP.Character.HumanoidRootPart.Position).Magnitude <= 20 then
-                    RS.Remotes.CommF_:InvokeServer("StartQuest", NameQuest, LevelQuest)
-                    task.wait(1)
-                end
-            else
+    while wait(0.2) do
+        if _G.Settings.Main["Auto Farm"] then
+            local success, err = pcall(function()
                 CheckQuest()
-
-                if workspace.Enemies:FindFirstChild(Mon) then
-                    if not _G.CurrentMobGroup or not _G.MobGroupLocked then
-                        lockedPosition = nil
-                        local nearestMob = nil
-                        local nearestDist = math.huge
-                        
-                        for _, mob in pairs(workspace.Enemies:GetChildren()) do
-                            if mob.Name == Mon
-                            and mob:FindFirstChild("HumanoidRootPart")
-                            and mob:FindFirstChild("Humanoid")
-                            and mob.Humanoid.Health > 0 then
-                                local dist = (mob.HumanoidRootPart.Position - LP.Character.HumanoidRootPart.Position).Magnitude
-                                if dist < nearestDist then
-                                    nearestDist = dist
-                                    nearestMob = mob
-                                end
-                            end
-                        end
-                        
-                        local v = nearestMob
-                        if v then
-                            local potentialGroup = GetNearestMobs(
-                                v.HumanoidRootPart.Position,
-                                2, 
-                                Mon,
-                                near
-                            )
-                            
-                            if #potentialGroup > 0 then
-                                for _, mob in ipairs(potentialGroup) do
-                                    if mob and mob.Parent and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                                        local loadCF = mob.HumanoidRootPart.CFrame * CFrame.new(0, HOVER_HEIGHT, 0)
-                                        if (LP.Character.HumanoidRootPart.Position - loadCF.Position).Magnitude > 10 then
-                                            topos(loadCF)
-                                            task.wait(0.2)
-                                        end
-                                        DamageUnit(mob)
+                
+                if not Mon or not NameQuest or not LevelQuest then
+                    warn("Quest data not loaded")
+                    return
+                end
+                
+                local QuestTitle = LP.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
+                
+                if not string.find(QuestTitle, Mon) then
+                    RS.Remotes.CommF_:InvokeServer("AbandonQuest")
+                end
+                
+                if LP.PlayerGui.Main.Quest.Visible == false then
+                    topos(CFrameQuest)
+                    if (LP.Character.HumanoidRootPart.Position - CFrameQuest.Position).Magnitude <= 5 then
+                        RS.Remotes.CommF_:InvokeServer("StartQuest", NameQuest, LevelQuest)
+                    end
+                elseif LP.PlayerGui.Main.Quest.Visible == true then
+                    if game.Workspace.Enemies:FindFirstChild(Mon) then
+                        for i, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                            if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                                if v.Name == Mon then
+                                    if string.find(LP.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, Mon) then
+                                        repeat
+                                            task.wait()
+                                            
+                                            local Pos = CFrame.new(0, _G.Settings.Setting["Farm Distance"], 0)
+                                            topos(v.HumanoidRootPart.CFrame * Pos)
+                                            
+                                            v.HumanoidRootPart.CanCollide = false
+                                            v.Humanoid.WalkSpeed = 0
+                                            v.Humanoid.JumpPower = 0
+                                            v.Head.CanCollide = false
+                                            v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                                            v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                                            
+                                            if _G.Settings.Setting["Bring Mob"] then
+                                                for _, mob in pairs(game.Workspace.Enemies:GetChildren()) do
+                                                    if mob.Name == Mon and mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                                                        mob.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
+                                                        mob.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                                                        mob.HumanoidRootPart.CanCollide = false
+                                                        mob.Humanoid.WalkSpeed = 0
+                                                        mob.Humanoid.JumpPower = 0
+                                                        mob.Head.CanCollide = false
+                                                        mob.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                                                        
+                                                        if mob.Humanoid:FindFirstChild("Animator") then
+                                                            mob.Humanoid.Animator:Destroy()
+                                                        end
+                                                    end
+                                                end
+                                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                            end
+                                            
+                                            Attack()
+                                        until not _G.Settings.Main["Auto Farm"] 
+                                            or v.Humanoid.Health <= 0 
+                                            or not v.Parent 
+                                            or LP.PlayerGui.Main.Quest.Visible == false
                                     end
                                 end
-                                
-                                _G.CurrentMobGroup = potentialGroup
-                                _G.MobGroupLocked = true
-                                
-                                local targetCF = v.HumanoidRootPart.CFrame * CFrame.new(0, stay, 0)
-                                lockedPosition = targetCF
-                                if (LP.Character.HumanoidRootPart.Position - targetCF.Position).Magnitude > 10 then
-                                    topos(targetCF)
-                                    task.wait(0.2)
-                                end
-                                lastPlayerMove = tick()
                             end
                         end
+                    else
+                        topos(CFrameMon)
                     end
-                    
-                    if _G.CurrentMobGroup and _G.MobGroupLocked and #_G.CurrentMobGroup > 0 then
-                        repeat
-                            task.wait()
-                            if not _G.Settings.Main["Auto Farm"] then break end
-                            if not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then break end
-                            LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-                            LP.Character.Humanoid.PlatformStand = false
-                            
-                            local primaryTarget = nil
-                            for _, mob in ipairs(_G.CurrentMobGroup) do
-                                if mob and mob.Parent and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                                    primaryTarget = mob
-                                    break
-                                end
-                            end
-                            
-                            if not primaryTarget then break end
-
-                            if lockedPosition then
-                                local distance = (LP.Character.HumanoidRootPart.Position - lockedPosition.Position).Magnitude
-                                if distance > 15 then
-                                    LP.Character.HumanoidRootPart.CFrame = lockedPosition
-                                end
-                            end
-
-                            if _G.Settings.Setting["Bring Mob"] then
-                                BringMobsToPlayer(_G.CurrentMobGroup, LP.Character.HumanoidRootPart.CFrame)
-                            end
-
-                            for _, mob in ipairs(_G.CurrentMobGroup) do
-                                if mob and mob.Parent and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                                    mob.HumanoidRootPart.CanCollide = false
-                                    mob.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                    DamageUnit(mob)
-                                end
-                            end
-
-                            local aliveMobs = {}
-                            for _, m in ipairs(_G.CurrentMobGroup) do
-                                if m and m.Parent and m:FindFirstChild("Humanoid") and m.Humanoid.Health > 0 then
-                                    table.insert(aliveMobs, m)
-                                end
-                            end
-                            
-                            if #aliveMobs > 0 then
-                                _G.CurrentMobGroup = aliveMobs
-                            else
-                                _G.CurrentMobGroup = nil
-                                _G.MobGroupLocked = false
-                                lockedPosition = nil
-                                break
-                            end
-
-                        until not _G.Settings.Main["Auto Farm"]
-
-                        _G.CurrentMobGroup = nil
-                        _G.MobGroupLocked = false
-                        lockedPosition = nil
-                    end
-                else
-                    _G.CurrentMobGroup = nil
-                    _G.MobGroupLocked = false
-                    lockedPosition = nil
-                    topos(CFrameMon)
                 end
+            end)
+            
+            if not success then
+                warn("Auto Farm Error:", err)
             end
-        end)
+        end
     end
 end)
+                             
 spawn(function()
 
 RunService.Stepped:Connect(function()
@@ -1347,7 +1272,7 @@ local Tabs = {
 
 local StatusParagraph = Tabs.Main:AddParagraph({
     Title = "Status Tracker",
-    Content = "Status: ðŸŸ¢\nTime Played: 00:00:00\nState: Idle"
+    Content = "Status: ???\nTime Played: 00:00:00\nState: Idle"
 })
 
 Tabs.Main:AddSection("Auto Farming")
@@ -1564,7 +1489,7 @@ Tabs.Combat:AddDropdown("AuraTarget", {
 Tabs.Combat:AddSlider("AuraRange", {
     Title = "Aura Range",
     Description = "Distance for Kill Aura",
-    Default = 25,
+    Default = 60,
     Min = 10,
     Max = 60,
     Rounding = 0,
@@ -1706,7 +1631,7 @@ end)
 
 Tabs.Info:AddParagraph({
     Title = "Script Information",
-    Content = "Dev: @RealFreakxNil\nVersion: Stable 1.0.6\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
+    Content = "Dev: @RealFreakxNil\nVersion: Stable 1.0.7\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
 })
 
 local function updateStatusDisplay()
@@ -1752,5 +1677,3 @@ spawn(function()
 end);
 
 Window:SelectTab(1)
-
-
