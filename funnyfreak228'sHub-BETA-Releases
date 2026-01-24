@@ -871,7 +871,7 @@ spawn(function()
 
     local safeplace = 12
     local stay = 30
-    local near = 240 
+    local near = 140
 
     RunService.Stepped:Connect(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
@@ -992,7 +992,7 @@ spawn(function()
                         if v then
                             local potentialGroup = GetNearestMobs(
                                 v.HumanoidRootPart.Position,
-                                2, 
+                                3, 
                                 Mon,
                                 near
                             )
