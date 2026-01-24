@@ -864,82 +864,66 @@ spawn(function()
 end)
 
 --- auto farm loop wow!
+
 spawn(function()
     local TweenService = game:GetService("TweenService")
     local RunService = game:GetService("RunService") 
     local Players = game:GetService("Players")
     local LP = Players.LocalPlayer
 
-    local CLUMP_RADIUS = 240
-    local HOVER_DISTANCE = 30
-    local MOB_CLUMP_SPEED = 300
+    -- Configuration
+    local BRING_SPEED = 200
+    local FARM_DISTANCE = 35
+    local CLUMP_RANGE = 240
 
+    -- Anti-fall during farming
     RunService.Stepped:Connect(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
             local hrp = LP.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
-                LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                hrp.Velocity = Vector3.new(0, 0, 0)
                 LP.Character.Humanoid.PlatformStand = false
             end
         end
     end)
 
-    local function GetMobsInRadius(centerMob, targetName, radius)
-        local mobs = {centerMob}
-        local centerPos = centerMob.HumanoidRootPart.Position
-        
+    -- Get all mobs in range and clump them to one position
+    local function BringMobsToPosition(targetPos, monsterName)
         for _, v in pairs(workspace.Enemies:GetChildren()) do
-            if v.Name == targetName
-            and v ~= centerMob
-            and v:FindFirstChild("Humanoid")
-            and v:FindFirstChild("HumanoidRootPart")
-            and v.Humanoid.Health > 0 then
-                local dist = (v.HumanoidRootPart.Position - centerPos).Magnitude
-                if dist <= radius then
-                    table.insert(mobs, v)
+            if v.Name == monsterName and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                local distance = (v.HumanoidRootPart.Position - targetPos).Magnitude
+                
+                if distance <= CLUMP_RANGE then
+                    pcall(function()
+                        -- Disable collision and movement
+                        v.HumanoidRootPart.CanCollide = false
+                        v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                        v.Humanoid.WalkSpeed = 0
+                        v.Humanoid.JumpPower = 0
+                        v.Head.CanCollide = false
+                        
+                        -- Tween mob to target position
+                        if _G.Settings.Setting["Bring Mob"] then
+                            local tweenTime = distance / BRING_SPEED
+                            local tween = TweenService:Create(
+                                v.HumanoidRootPart,
+                                TweenInfo.new(tweenTime, Enum.EasingStyle.Linear),
+                                {CFrame = CFrame.new(targetPos)}
+                            )
+                            tween:Play()
+                        end
+                    end)
                 end
             end
         end
-        
-        return mobs
     end
 
-    local function ClumpMobsTogether(mobs, centerPosition)
-        for i, mob in ipairs(mobs) do
-            if mob and mob.Parent and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                pcall(function()
-                    mob.HumanoidRootPart.CanCollide = false
-                    mob.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                    mob.Humanoid.WalkSpeed = 0
-                    mob.Humanoid.JumpPower = 0
-                    
-                    local dist = (mob.HumanoidRootPart.Position - centerPosition).Magnitude
-                    local time = dist / MOB_CLUMP_SPEED
-                    
-                    local angle = (i - 1) * (360 / #mobs)
-                    local offset = CFrame.Angles(0, math.rad(angle), 0) * CFrame.new(0, 0, 5)
-                    local targetCF = CFrame.new(centerPosition) * offset
-                    
-                    TweenService:Create(
-                        mob.HumanoidRootPart,
-                        TweenInfo.new(time, Enum.EasingStyle.Linear),
-                        {CFrame = targetCF}
-                    ):Play()
-                end)
-            end
-        end
-    end
-
-    local lockedPosition = nil
-    local mobsClumping = false
-
+    -- Main farming loop
     while task.wait() do
         if not _G.Settings.Main["Auto Farm"] then 
             if LP.Character and LP.Character:FindFirstChild("Humanoid") then
                 LP.Character.Humanoid.PlatformStand = false
             end
-            lockedPosition = nil
-            mobsClumping = false
             continue 
         end
 
@@ -950,18 +934,19 @@ spawn(function()
 
             CheckQuest()
 
+            -- Get quest if don't have one
             if not LP.PlayerGui.Main.Quest.Visible then
-                lockedPosition = nil
-                mobsClumping = false
                 topos(CFrameQuest)
                 if (CFrameQuest.Position - LP.Character.HumanoidRootPart.Position).Magnitude <= 20 then
                     RS.Remotes.CommF_:InvokeServer("StartQuest", NameQuest, LevelQuest)
                     task.wait(1)
                 end
             else
+                -- Quest is active, farm mobs
                 CheckQuest()
 
                 if workspace.Enemies:FindFirstChild(Mon) then
+                    -- Find nearest mob
                     local nearestMob = nil
                     local nearestDist = math.huge
                     
@@ -979,80 +964,55 @@ spawn(function()
                     end
                     
                     if nearestMob then
-                        local mobGroup = GetMobsInRadius(nearestMob, Mon, CLUMP_RADIUS)
+                        -- Set farm position above nearest mob
+                        local farmPos = nearestMob.HumanoidRootPart.Position
+                        local farmCFrame = CFrame.new(farmPos) * CFrame.new(0, FARM_DISTANCE, 0)
                         
-                        if #mobGroup > 1 and not mobsClumping then
-                            mobsClumping = true
-                            local clumpCenter = nearestMob.HumanoidRootPart.Position
-                            
-                            ClumpMobsTogether(mobGroup, clumpCenter)
-                            
-                            local maxDist = 0
-                            for _, mob in ipairs(mobGroup) do
-                                if mob and mob:FindFirstChild("HumanoidRootPart") then
-                                    local d = (mob.HumanoidRootPart.Position - clumpCenter).Magnitude
-                                    if d > maxDist then maxDist = d end
-                                end
-                            end
-                            
-                            local waitTime = maxDist / MOB_CLUMP_SPEED
-                            task.wait(waitTime + 0.5)
+                        -- Move player to farm position
+                        if (LP.Character.HumanoidRootPart.Position - farmCFrame.Position).Magnitude > 10 then
+                            topos(farmCFrame)
+                            task.wait()
                         end
                         
-                        local targetCF = CFrame.new(nearestMob.HumanoidRootPart.Position) * CFrame.new(0, HOVER_DISTANCE, 0)
-                        lockedPosition = targetCF
+                        -- Bring all mobs to farm position
+                        BringMobsToPosition(farmPos, Mon)
                         
-                        if (LP.Character.HumanoidRootPart.Position - targetCF.Position).Magnitude > 10 then
-                            topos(targetCF)
-                        end
-                        
+                        -- Farm loop
                         repeat
                             task.wait()
                             if not _G.Settings.Main["Auto Farm"] then break end
                             if not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then break end
                             
+                            -- Keep player in position
                             LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             LP.Character.Humanoid.PlatformStand = false
+                            LP.Character.HumanoidRootPart.CFrame = farmCFrame
                             
-                            if lockedPosition then
-                                local distance = (LP.Character.HumanoidRootPart.Position - lockedPosition.Position).Magnitude
-                                if distance > 15 then
-                                    LP.Character.HumanoidRootPart.CFrame = lockedPosition
-                                end
+                            -- Continuously bring mobs
+                            if _G.Settings.Setting["Bring Mob"] then
+                                BringMobsToPosition(farmPos, Mon)
                             end
                             
-                            local aliveMobs = {}
+                            -- Attack
+                            local foundAlive = false
                             for _, mob in pairs(workspace.Enemies:GetChildren()) do
                                 if mob.Name == Mon
-                                and mob:FindFirstChild("HumanoidRootPart")
                                 and mob:FindFirstChild("Humanoid")
                                 and mob.Humanoid.Health > 0 then
-                                    table.insert(aliveMobs, mob)
-                                    
-                                    if _G.Settings.Setting["Bring Mob"] then
-                                        mob.HumanoidRootPart.CanCollide = false
-                                        mob.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                        mob.Humanoid.WalkSpeed = 0
-                                        mob.Humanoid.JumpPower = 0
-                                        mob.HumanoidRootPart.CFrame = CFrame.new(nearestMob.HumanoidRootPart.Position)
-                                    end
-                                    
+                                    foundAlive = true
                                     Attack()
+                                    break
                                 end
                             end
                             
-                            if #aliveMobs == 0 then
+                            if not foundAlive then
                                 break
                             end
 
                         until not _G.Settings.Main["Auto Farm"]
-                        
-                        mobsClumping = false
-                        lockedPosition = nil
                     end
                 else
-                    mobsClumping = false
-                    lockedPosition = nil
+                    -- No mobs found, go to spawn location
                     topos(CFrameMon)
                 end
             end
