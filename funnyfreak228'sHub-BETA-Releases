@@ -870,8 +870,8 @@ spawn(function()
     local LP = Players.LocalPlayer
 
     local safeplace = 12
-    local stay = 30
-    local near = 140
+    local stay = 20
+    local near = 200
 
     RunService.Stepped:Connect(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
