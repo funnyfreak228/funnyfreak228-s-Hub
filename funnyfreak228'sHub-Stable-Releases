@@ -1740,5 +1740,17 @@ spawn(function()
     end
 end)
 
+spawn(function()
+	repeat
+		task.wait();
+	until game:IsLoaded();
+	local ChatService = game:GetService("Chat");
+	wait(1);
+	((require(game.ReplicatedStorage.Notification)).new("<Color=Purple>[ Welcome " .. game.Players.LocalPlayer.DisplayName .. " ]<Color=/>")):Display();
+	wait(1);
+	((require(game.ReplicatedStorage.Notification)).new("<Color=Yellow>[ Sub 2 @RealFreakxNil on YT! ]<Color=/>")):Display();
+end);
+
 Window:SelectTab(1)
+
 
