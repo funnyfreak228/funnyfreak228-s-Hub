@@ -870,24 +870,26 @@ spawn(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
             local hrp = LP.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
-                -- Only stabilize if not currently tweening
                 if not CurrentTween or CurrentTween.PlaybackState ~= Enum.PlaybackState.Playing then
                     LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                     LP.Character.Humanoid.PlatformStand = false
                 end
             end
             
-            
-            if _G.Settings.Setting["Bring Mob"] then
+            if _G.Settings.Setting["Bring Mob"] and Mon then
                 pcall(function()
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                         if v.Name == Mon and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-                            v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                             v.HumanoidRootPart.CanCollide = false
                             v.Humanoid.WalkSpeed = 0
                             v.Humanoid.JumpPower = 0
                             v.Head.CanCollide = false
+                            v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                            
+                            if v.Humanoid:FindFirstChild("Animator") then
+                                v.Humanoid.Animator:Destroy()
+                            end
                         end
                     end
                 end)
@@ -907,7 +909,6 @@ spawn(function()
                 
                 local QuestTitle = LP.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
                 
-                
                 if not string.find(QuestTitle, Mon) then
                     RS.Remotes.CommF_:InvokeServer("AbandonQuest")
                 end
@@ -922,11 +923,9 @@ spawn(function()
                         for i, v in pairs(game.Workspace.Enemies:GetChildren()) do
                             if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                                 if v.Name == Mon then
-                                    
                                     if string.find(LP.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, Mon) then
                                         repeat
                                             task.wait()
-                                            
                                             
                                             local Pos = CFrame.new(0, _G.Settings.Setting["Farm Distance"], 0)
                                             topos(v.HumanoidRootPart.CFrame * Pos)
@@ -936,19 +935,12 @@ spawn(function()
                                             v.Humanoid.JumpPower = 0
                                             v.Head.CanCollide = false
                                             v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                            
-                                            
                                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-                                            v.HumanoidRootPart.Anchored = false -- Don't anchor or it won't take damage
                                             
-                                        
                                             if _G.Settings.Setting["Bring Mob"] then
                                                 for _, mob in pairs(game.Workspace.Enemies:GetChildren()) do
                                                     if mob.Name == Mon and mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                                                        -- Teleport mob to main target
                                                         mob.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
-                                                        
-                                                        
                                                         mob.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                                                         mob.HumanoidRootPart.CanCollide = false
                                                         mob.Humanoid.WalkSpeed = 0
@@ -956,15 +948,12 @@ spawn(function()
                                                         mob.Head.CanCollide = false
                                                         mob.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                                         
-                                                        
                                                         if mob.Humanoid:FindFirstChild("Animator") then
                                                             mob.Humanoid.Animator:Destroy()
                                                         end
-                                                        
-                                                        
-                                                        sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
                                                     end
                                                 end
+                                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
                                             end
                                             
                                             Attack()
@@ -984,12 +973,10 @@ spawn(function()
             
             if not success then
                 warn("Auto Farm Error:", err)
-                errorCount = errorCount + 1
             end
         end
     end
 end)
-    
                              
 spawn(function()
 
