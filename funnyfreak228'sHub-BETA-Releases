@@ -8,7 +8,7 @@ local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
 
 local Window = Fluent:CreateWindow({
-    Title = "funnyfreak228's Hub | BETA 1.0.6",
+    Title = "funnyfreak228's Hub | BETA 1.0.7",
     SubTitle = "by @RealFreakxNil",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 380),
@@ -1272,7 +1272,7 @@ local Tabs = {
 
 local StatusParagraph = Tabs.Main:AddParagraph({
     Title = "Status Tracker",
-    Content = "Status: ðŸŸ¢\nTime Played: 00:00:00\nState: Idle"
+    Content = "Status: ???\nTime Played: 00:00:00\nState: Idle"
 })
 
 Tabs.Main:AddSection("Auto Farming")
