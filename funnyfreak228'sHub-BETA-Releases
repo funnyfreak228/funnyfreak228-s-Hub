@@ -864,161 +864,67 @@ spawn(function()
 end)
 
 --- auto farm loop wow!
-
 spawn(function()
-    local TweenService = game:GetService("TweenService")
-    local RunService = game:GetService("RunService") 
-    local Players = game:GetService("Players")
-    local LP = Players.LocalPlayer
-
-    -- Configuration
-    local BRING_SPEED = 200
-    local FARM_DISTANCE = 35
-    local CLUMP_RANGE = 240
-
-    -- Anti-fall during farming
-    RunService.Stepped:Connect(function()
-        if _G.Settings.Main["Auto Farm"] and LP.Character then
-            local hrp = LP.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                hrp.Velocity = Vector3.new(0, 0, 0)
-                LP.Character.Humanoid.PlatformStand = false
-            end
-        end
-    end)
-
-    -- Get all mobs in range and clump them to one position
-    local function BringMobsToPosition(targetPos, monsterName)
-        for _, v in pairs(workspace.Enemies:GetChildren()) do
-            if v.Name == monsterName and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                local distance = (v.HumanoidRootPart.Position - targetPos).Magnitude
-                
-                if distance <= CLUMP_RANGE then
-                    pcall(function()
-                        -- Disable collision and movement
-                        v.HumanoidRootPart.CanCollide = false
-                        v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                        v.Humanoid.WalkSpeed = 0
-                        v.Humanoid.JumpPower = 0
-                        v.Head.CanCollide = false
-                        
-                        -- Tween mob to target position
-                        if _G.Settings.Setting["Bring Mob"] then
-                            local tweenTime = distance / BRING_SPEED
-                            local tween = TweenService:Create(
-                                v.HumanoidRootPart,
-                                TweenInfo.new(tweenTime, Enum.EasingStyle.Linear),
-                                {CFrame = CFrame.new(targetPos)}
-                            )
-                            tween:Play()
-                        end
-                    end)
+    while task.wait(0.2) do
+        if _G.Settings.Main["Auto Farm"] then
+            pcall(function()
+                if not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then
+                    return
                 end
-            end
-        end
-    end
 
-    -- Main farming loop
-    while task.wait() do
-        if not _G.Settings.Main["Auto Farm"] then 
-            if LP.Character and LP.Character:FindFirstChild("Humanoid") then
-                LP.Character.Humanoid.PlatformStand = false
-            end
-            continue 
-        end
-
-        pcall(function()
-            if not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then
-                return
-            end
-
-            CheckQuest()
-
-            -- Get quest if don't have one
-            if not LP.PlayerGui.Main.Quest.Visible then
-                topos(CFrameQuest)
-                if (CFrameQuest.Position - LP.Character.HumanoidRootPart.Position).Magnitude <= 20 then
-                    RS.Remotes.CommF_:InvokeServer("StartQuest", NameQuest, LevelQuest)
-                    task.wait(1)
-                end
-            else
-                -- Quest is active, farm mobs
                 CheckQuest()
-
-                if workspace.Enemies:FindFirstChild(Mon) then
-                    -- Find nearest mob
-                    local nearestMob = nil
-                    local nearestDist = math.huge
-                    
-                    for _, mob in pairs(workspace.Enemies:GetChildren()) do
-                        if mob.Name == Mon
-                        and mob:FindFirstChild("HumanoidRootPart")
-                        and mob:FindFirstChild("Humanoid")
-                        and mob.Humanoid.Health > 0 then
-                            local dist = (mob.HumanoidRootPart.Position - LP.Character.HumanoidRootPart.Position).Magnitude
-                            if dist < nearestDist then
-                                nearestDist = dist
-                                nearestMob = mob
-                            end
-                        end
-                    end
-                    
-                    if nearestMob then
-                        -- Set farm position above nearest mob
-                        local farmPos = nearestMob.HumanoidRootPart.Position
-                        local farmCFrame = CFrame.new(farmPos) * CFrame.new(0, FARM_DISTANCE, 0)
-                        
-                        -- Move player to farm position
-                        if (LP.Character.HumanoidRootPart.Position - farmCFrame.Position).Magnitude > 10 then
-                            topos(farmCFrame)
-                            task.wait()
-                        end
-                        
-                        -- Bring all mobs to farm position
-                        BringMobsToPosition(farmPos, Mon)
-                        
-                        -- Farm loop
-                        repeat
-                            task.wait()
-                            if not _G.Settings.Main["Auto Farm"] then break end
-                            if not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then break end
-                            
-                            -- Keep player in position
-                            LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-                            LP.Character.Humanoid.PlatformStand = false
-                            LP.Character.HumanoidRootPart.CFrame = farmCFrame
-                            
-                            -- Continuously bring mobs
-                            if _G.Settings.Setting["Bring Mob"] then
-                                BringMobsToPosition(farmPos, Mon)
-                            end
-                            
-                            -- Attack
-                            local foundAlive = false
-                            for _, mob in pairs(workspace.Enemies:GetChildren()) do
-                                if mob.Name == Mon
-                                and mob:FindFirstChild("Humanoid")
-                                and mob.Humanoid.Health > 0 then
-                                    foundAlive = true
-                                    Attack()
-                                    break
-                                end
-                            end
-                            
-                            if not foundAlive then
-                                break
-                            end
-
-                        until not _G.Settings.Main["Auto Farm"]
+                
+                -- Check if quest is active
+                if LP.PlayerGui.Main.Quest.Visible == false then
+                    -- No quest, go get it
+                    topos(CFrameQuest)
+                    if (LP.Character.HumanoidRootPart.Position - CFrameQuest.Position).Magnitude <= 20 then
+                        RS.Remotes.CommF_:InvokeServer("StartQuest", NameQuest, LevelQuest)
+                        task.wait(0.5)
                     end
                 else
-                    -- No mobs found, go to spawn location
-                    topos(CFrameMon)
+                    -- Quest is active, check if it's the right one
+                    local QuestTitle = LP.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
+                    if not string.find(QuestTitle, Mon) then
+                        RS.Remotes.CommF_:InvokeServer("AbandonQuest")
+                        task.wait(0.5)
+                        return
+                    end
+                    
+                    -- Farm the mobs
+                    if workspace.Enemies:FindFirstChild(Mon) then
+                        for i, v in pairs(workspace.Enemies:GetChildren()) do
+                            if v.Name == Mon and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                                repeat
+                                    task.wait()
+                                    
+                                    if not _G.Settings.Main["Auto Farm"] then break end
+                                    if LP.PlayerGui.Main.Quest.Visible == false then break end
+                                    
+                                    v.HumanoidRootPart.CanCollide = false
+                                    v.Humanoid.WalkSpeed = 0
+                                    v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                                    
+                                    topos(v.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                                    
+                                    Attack()
+                                    
+                                until not _G.Settings.Main["Auto Farm"] 
+                                    or v.Humanoid.Health <= 0 
+                                    or not v.Parent 
+                                    or LP.PlayerGui.Main.Quest.Visible == false
+                            end
+                        end
+                    else
+                        -- No mobs, go to spawn location
+                        topos(CFrameMon)
+                    end
                 end
-            end
-        end)
+            end)
+        end
     end
 end)
+
 
 spawn(function()
 
