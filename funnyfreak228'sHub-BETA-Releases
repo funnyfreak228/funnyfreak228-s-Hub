@@ -880,6 +880,16 @@ end)
 
 --- farm loop wowwwwwwww (extra w's)
 spawn(function()
+    while task.wait(0.5) do
+        if _G.Settings.Setting["Bring Mob"] then
+            pcall(function()
+                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", _G.Settings.Setting["Bring Mob Range"])
+            end)
+        end
+    end
+end)
+
+spawn(function()
     RunService.Stepped:Connect(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
             local hrp = LP.Character:FindFirstChild("HumanoidRootPart")
@@ -894,6 +904,7 @@ spawn(function()
                 pcall(function()
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                         if v.Name == Mon and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                            v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             v.HumanoidRootPart.CanCollide = false
                             v.Humanoid.WalkSpeed = 0
@@ -913,7 +924,7 @@ spawn(function()
 
     while wait(0.2) do
         if _G.Settings.Main["Auto Farm"] then
-            local success, err = pcall(function()
+            pcall(function()
                 CheckQuest()
                 
                 if not Mon or not NameQuest or not LevelQuest then
@@ -944,6 +955,7 @@ spawn(function()
                                             local Pos = CFrame.new(0, _G.Settings.Setting["Farm Distance"], 0)
                                             topos(v.HumanoidRootPart.CFrame * Pos)
                                             
+                                            v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                                             v.HumanoidRootPart.CanCollide = false
                                             v.Humanoid.WalkSpeed = 0
                                             v.Humanoid.JumpPower = 0
@@ -967,7 +979,6 @@ spawn(function()
                                                         end
                                                     end
                                                 end
-                                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", _G.Settings.Setting["Bring Mob Range"])
                                             end
                                             
                                             Attack()
@@ -984,14 +995,10 @@ spawn(function()
                     end
                 end
             end)
-            
-            if not success then
-                warn("Auto Farm Error:", err)
-            end
         end
     end
 end)
-                             
+
 spawn(function()
 
 RunService.Stepped:Connect(function()
