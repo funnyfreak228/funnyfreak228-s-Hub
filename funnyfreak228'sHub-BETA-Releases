@@ -900,7 +900,7 @@ spawn(function()
                             v.Humanoid.JumpPower = 0
                             v.Head.CanCollide = false
                             v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-Hum
+                            
                             if v.Humanoid:FindFirstChild("Animator") then
                                 v.Humanoid.Animator:Destroy()
                             end
@@ -950,6 +950,7 @@ Hum
                                             v.Head.CanCollide = false
                                             v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                                            
                                             if _G.Settings.Setting["Bring Mob"] then
                                                 for _, mob in pairs(game.Workspace.Enemies:GetChildren()) do
                                                     if mob.Name == Mon and mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
@@ -1650,7 +1651,7 @@ end)
 
 Tabs.Info:AddParagraph({
     Title = "Script Information",
-    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.6\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
+    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.7\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
 })
 
 local function updateStatusDisplay()
