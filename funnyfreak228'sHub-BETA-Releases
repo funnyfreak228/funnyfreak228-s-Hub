@@ -955,7 +955,7 @@ spawn(function()
                                             
                                             if _G.Settings.Setting["Bring Mob"] then
                                                 for _, mob in pairs(game.Workspace.Enemies:GetChildren()) do
-                                                    if mob.Name == Mon and mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                                                    if  mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
                                                         mob.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                                                         mob.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                                                         mob.HumanoidRootPart.CanCollide = false
