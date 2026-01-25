@@ -35,7 +35,7 @@ local tableBoss = {}
 _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
     Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
-    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true},
+    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 300},
     Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
 }
 
@@ -967,7 +967,7 @@ spawn(function()
                                                         end
                                                     end
                                                 end
-                                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", _G.Settings.Setting["Bring Mob Range"])
                                             end
                                             
                                             Attack()
@@ -1590,6 +1590,18 @@ Tabs.Settings:AddToggle("BringMob", {
     end
 })
 
+Tabs.Settings:AddSlider("BringMobRange", {
+    Title = "Bring Mob Range",
+    Description = "Distance to bring mobs",
+    Default = 300,
+    Min = 100,
+    Max = 300,
+    Rounding = 0,
+    Callback = function(Value)
+        _G.Settings.Setting["Bring Mob Range"] = Value
+    end
+})
+
 _G.AntiAFK = false
 
 Tabs.MiscTab:AddToggle("AntiAFK", {
@@ -1597,12 +1609,6 @@ Tabs.MiscTab:AddToggle("AntiAFK", {
     Default = true,
     Callback = function(Value)
        _G.AntiAFK = Value
-
-       Fluent:Notify({
-       Title = "AntiAFK " .. (Value and "ON" or "OFF") .. "!",
-       Content = Value and "Feel free to go AFK, You are now safe from Roblox disconnections!" or "AntiAFK has been disabled.",
-       Duration = 5
-     })
     end
 })
 
