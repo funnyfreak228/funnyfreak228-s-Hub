@@ -1691,7 +1691,6 @@ spawn(function()
 end);
 
 SaveManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
 SaveManager:SetFolder("FunnyFreak228Hub/configs")
 InterfaceManager:SetLibrary(Fluent)
 InterfaceManager:SetFolder("FunnyFreak228Hub")
@@ -1704,6 +1703,7 @@ task.spawn(function()
 end)
 
 Window:SelectTab(1)
+
 
 
 
