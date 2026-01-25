@@ -1568,7 +1568,7 @@ Tabs.Settings:AddSlider("TweenSpeed", {
     Default = 300,
     Min = 100,
     Max = 300,
-    Rounding = 10,
+    Rounding = 0,
     Callback = function(Value)
         _G.Settings.Setting["Tween Speed"] = Value
     end
