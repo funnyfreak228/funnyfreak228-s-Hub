@@ -896,6 +896,7 @@ spawn(function()
                         if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             v.HumanoidRootPart.CanCollide = false
+                            v.HumanoidRootPart.Anchored = true  
                             v.Humanoid.WalkSpeed = 0
                             v.Humanoid.JumpPower = 0
                             v.Head.CanCollide = false
@@ -950,6 +951,7 @@ spawn(function()
                                             v.Humanoid.WalkSpeed = 0
                                             v.Humanoid.JumpPower = 0
                                             v.Head.CanCollide = false
+                                            v.HumanoidRootPart.Anchored = true
                                             v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                                             
@@ -959,6 +961,7 @@ spawn(function()
                                                         mob.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                                                         mob.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                                                         mob.HumanoidRootPart.CanCollide = false
+                                                        mob.HumanoidRootPart.Anchored = true
                                                         mob.Humanoid.WalkSpeed = 0
                                                         mob.Humanoid.JumpPower = 0
                                                         mob.Head.CanCollide = false
