@@ -1690,4 +1690,12 @@ spawn(function()
 	((require(game.ReplicatedStorage.Notification)).new("<Color=Yellow>[ Sub 2 @RealFreakxNil on YT! ]<Color=/>")):Display();
 end);
 
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:SetFolder("FunnyFreak228Hub")
+InterfaceManager:SetFolder("FunnyFreak228Hub")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+SaveManager:LoadAutoloadConfig()
+
 Window:SelectTab(1)
