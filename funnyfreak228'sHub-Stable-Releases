@@ -784,6 +784,20 @@ end
 PopulateBossList()
 
 spawn(function()
+RunService.Stepped:Connect(function()
+        if _G.Settings.Main["Auto Farm Boss"] or _G.Settings.Main["Auto Farm"] or _G.Settings.Main["Auto Farm All Bosses"] and LP.Character then
+            local hrp = LP.Character:FindFirstChild("HumanoidRootPart")
+            local hum = LP.Character:FindFirstChild("Humanoid")
+            if hrp then
+            LP.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+            LP.Character.Humanoid.PlatformStand = false
+            end
+           
+        end
+end)
+end)
+
+spawn(function()
     while task.wait(0.1) do
         if _G.Settings.Combat["Kill Aura"] then
             pcall(function()
@@ -1677,3 +1691,4 @@ spawn(function()
 end);
 
 Window:SelectTab(1)
+
