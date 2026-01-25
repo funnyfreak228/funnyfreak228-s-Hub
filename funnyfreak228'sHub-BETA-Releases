@@ -894,7 +894,6 @@ spawn(function()
                 pcall(function()
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                         if v.Name == Mon and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                            v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             v.HumanoidRootPart.CanCollide = false
                             v.Humanoid.WalkSpeed = 0
@@ -945,7 +944,6 @@ spawn(function()
                                             local Pos = CFrame.new(0, _G.Settings.Setting["Farm Distance"], 0)
                                             topos(v.HumanoidRootPart.CFrame * Pos)
                                             
-                                            v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                                             v.HumanoidRootPart.CanCollide = false
                                             v.Humanoid.WalkSpeed = 0
                                             v.Humanoid.JumpPower = 0
@@ -986,6 +984,13 @@ spawn(function()
                     end
                 end
             end)
+            
+            if not success then
+                warn("Auto Farm Error:", err)
+            end
+        end
+    end
+end)
                              
 spawn(function()
 
