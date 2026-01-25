@@ -1691,13 +1691,19 @@ spawn(function()
 end);
 
 SaveManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetFolder("FunnyFreak228Hub/configs")
 InterfaceManager:SetLibrary(Fluent)
-SaveManager:SetFolder("FunnyFreak228Hub")
 InterfaceManager:SetFolder("FunnyFreak228Hub")
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
-SaveManager:LoadAutoloadConfig()
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:SetIgnoreIndexes({})
+task.spawn(function()
+    wait(1)
+    SaveManager:LoadAutoloadConfig()
+end)
 
 Window:SelectTab(1)
+
 
 
