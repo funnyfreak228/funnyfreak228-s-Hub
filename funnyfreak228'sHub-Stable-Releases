@@ -1561,7 +1561,7 @@ Tabs.Stats:AddToggle("AutoStats", {
     end
 })
 
-
+Tabs.Settings:AddSection("Game Settings")
 Tabs.Settings:AddSlider("TweenSpeed", {
     Title = "Tween Speed",
     Description = "Control your tween speed",
@@ -1703,6 +1703,7 @@ task.spawn(function()
 end)
 
 Window:SelectTab(1)
+
 
 
 
