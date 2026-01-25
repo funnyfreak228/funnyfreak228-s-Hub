@@ -900,7 +900,7 @@ spawn(function()
                             v.Humanoid.JumpPower = 0
                             v.Head.CanCollide = false
                             v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                            
+                            v.Humanoid.PlatformStand = false
                             if v.Humanoid:FindFirstChild("Animator") then
                                 v.Humanoid.Animator:Destroy()
                             end
@@ -950,7 +950,7 @@ spawn(function()
                                             v.Head.CanCollide = false
                                             v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-                                            
+                                            v.Humanoid.PlatformStand = false
                                             if _G.Settings.Setting["Bring Mob"] then
                                                 for _, mob in pairs(game.Workspace.Enemies:GetChildren()) do
                                                     if mob.Name == Mon and mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
@@ -961,7 +961,7 @@ spawn(function()
                                                         mob.Humanoid.JumpPower = 0
                                                         mob.Head.CanCollide = false
                                                         mob.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                                        
+                                                        mob.Humanoid.PlatformStand = false
                                                         if mob.Humanoid:FindFirstChild("Animator") then
                                                             mob.Humanoid.Animator:Destroy()
                                                         end
