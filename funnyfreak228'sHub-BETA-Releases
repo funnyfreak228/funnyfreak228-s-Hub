@@ -35,7 +35,7 @@ local tableBoss = {}
 _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
     Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
-    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 300},
+    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 200},
     Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
 }
 
@@ -1385,21 +1385,21 @@ Tabs.Shop:AddSection("Skill Section")
 Tabs.Shop:AddButton({
     Title = "Buy Aura",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Aura")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Haki")
     end
 })
 
 Tabs.Shop:AddButton({
     Title = "Buy Sky Jump",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Air Jump")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Geppo")
     end
 })
 
 Tabs.Shop:AddButton({
     Title = "Buy Flash Step",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Flash Step")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Soru")
     end
 })
 
@@ -1593,9 +1593,9 @@ Tabs.Settings:AddToggle("BringMob", {
 Tabs.Settings:AddSlider("BringMobRange", {
     Title = "Bring Mob Range",
     Description = "Distance to bring mobs",
-    Default = 300,
+    Default = 200,
     Min = 100,
-    Max = 300,
+    Max = 200,
     Rounding = 0,
     Callback = function(Value)
         _G.Settings.Setting["Bring Mob Range"] = Value
@@ -1655,7 +1655,7 @@ Tabs.Info:AddParagraph({
 })
 
 local function updateStatusDisplay()
-    local statusIcon = errorCount > 0 and "ðŸ”´" or "ðŸŸ¢"
+    local statusIcon = errorCount > 0 and "🔴" or "🟢"
     local errorText = errorCount > 0 and " (Errors: " .. errorCount .. ")" or ""
     
     local elapsed = tick() - startTime
