@@ -904,6 +904,8 @@ spawn(function()
                             if v.Humanoid:FindFirstChild("Animator") then
                                 v.Humanoid.Animator:Destroy()
                             end
+                            
+                            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", _G.Settings.Setting["Bring Mob Range"])
                         end
                     end
                 end)
