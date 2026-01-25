@@ -893,7 +893,7 @@ spawn(function()
             if Mon then
                 pcall(function()
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
-                        if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                        if v.Name == Mon and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             v.HumanoidRootPart.CanCollide = false
                             v.HumanoidRootPart.Anchored = true  
@@ -957,7 +957,7 @@ spawn(function()
                                             
                                             if _G.Settings.Setting["Bring Mob"] then
                                                 for _, mob in pairs(game.Workspace.Enemies:GetChildren()) do
-                                                    if  mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                                                    if  mob.Name == Mon and mob ~= v and mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
                                                         mob.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                                                         mob.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                                                         mob.HumanoidRootPart.CanCollide = false
