@@ -1561,7 +1561,7 @@ Tabs.Stats:AddToggle("AutoStats", {
     end
 })
 
-
+Tabs.Settings:AddSection("Game Settings")
 Tabs.Settings:AddSlider("TweenSpeed", {
     Title = "Tween Speed",
     Description = "Control your tween speed",
@@ -1691,7 +1691,6 @@ spawn(function()
 end);
 
 SaveManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
 SaveManager:SetFolder("FunnyFreak228Hub/configs")
 InterfaceManager:SetLibrary(Fluent)
 InterfaceManager:SetFolder("FunnyFreak228Hub")
