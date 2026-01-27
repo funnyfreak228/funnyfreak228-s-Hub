@@ -375,7 +375,7 @@ function CheckQuest()
             NameQuest = "SkyExp2Quest"
             CFrameQuest = CFrame.new(-7906, 5634, -1411)
             CFrameMon = CFrame.new(-7836, 5645, -1790)
-             if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10 then
+             if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
 			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-4607.82275, 872.54248, -1667.55688))
 			end
         elseif MyLevel == 625 or MyLevel <= 649 then
