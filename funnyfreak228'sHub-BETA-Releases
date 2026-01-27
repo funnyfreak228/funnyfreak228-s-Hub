@@ -330,36 +330,54 @@ function CheckQuest()
             NameQuest = "FishmanQuest"
             CFrameQuest = CFrame.new(61122, 18, 1569)
             CFrameMon = CFrame.new(60878, 18, 1543)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(61163.8515625, 11.6796875, 1819.7841796875))
+			end
         elseif MyLevel == 400 or MyLevel <= 449 then
             Mon = "Fishman Commando"
             LevelQuest = 2
             NameQuest = "FishmanQuest"
             CFrameQuest = CFrame.new(61122, 18, 1569)
             CFrameMon = CFrame.new(61922, 18, 1493)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(61163.8515625, 11.6796875, 1819.7841796875))
+			end
         elseif MyLevel == 450 or MyLevel <= 474 then
             Mon = "God's Guard"
             LevelQuest = 1
             NameQuest = "SkyExp1Quest"
             CFrameQuest = CFrame.new(-4721, 843, -1949)
             CFrameMon = CFrame.new(-4710, 845, -1927)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-4607.82275, 872.54248, -1667.55688))
+			end
         elseif MyLevel == 475 or MyLevel <= 524 then
             Mon = "Shanda"
             LevelQuest = 2
             NameQuest = "SkyExp1Quest"
             CFrameQuest = CFrame.new(-7859, 5544, -381)
             CFrameMon = CFrame.new(-7678, 5566, -497)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+		    (game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-4607.82275, 872.54248, -1667.55688))
+			end
         elseif MyLevel == 525 or MyLevel <= 549 then
             Mon = "Royal Squad"
             LevelQuest = 1
             NameQuest = "SkyExp2Quest"
             CFrameQuest = CFrame.new(-7906, 5634, -1411)
             CFrameMon = CFrame.new(-7624, 5658, -1467)
+             if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-4607.82275, 872.54248, -1667.55688))
+			end
         elseif MyLevel == 550 or MyLevel <= 624 then
             Mon = "Royal Soldier"
             LevelQuest = 2
             NameQuest = "SkyExp2Quest"
             CFrameQuest = CFrame.new(-7906, 5634, -1411)
             CFrameMon = CFrame.new(-7836, 5645, -1790)
+             if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-4607.82275, 872.54248, -1667.55688))
+			end
         elseif MyLevel == 625 or MyLevel <= 649 then
             Mon = "Galley Pirate"
             LevelQuest = 1
@@ -464,24 +482,36 @@ function CheckQuest()
             NameQuest = "ShipQuest1"
             CFrameQuest = CFrame.new(1037, 125, 32911)
             CFrameMon = CFrame.new(1212, 150, 33059)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1275 or MyLevel <= 1299 then
             Mon = "Ship Engineer"
             LevelQuest = 2
             NameQuest = "ShipQuest1"
             CFrameQuest = CFrame.new(1037, 125, 32911)
             CFrameMon = CFrame.new(919, 43, 32779)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1300 or MyLevel <= 1324 then
             Mon = "Ship Steward"
             LevelQuest = 1
             NameQuest = "ShipQuest2"
             CFrameQuest = CFrame.new(968, 125, 33244)
             CFrameMon = CFrame.new(919, 129, 33436)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1325 or MyLevel <= 1349 then
             Mon = "Ship Officer"
             LevelQuest = 2
             NameQuest = "ShipQuest2"
             CFrameQuest = CFrame.new(968, 125, 33244)
             CFrameMon = CFrame.new(1036, 181, 33315)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1350 or MyLevel <= 1374 then
             Mon = "Arctic Warrior"
             LevelQuest = 1
