@@ -754,14 +754,13 @@ function CheckQuest()
             NameQuest = "TikiQuest3"
             CFrameQuest = CFrame.new(-16661, 105, 1576)
             CFrameMon = CFrame.new(-16587, 154, 1533)
-        elseif MyLevel >= 2575 then
+        elseif MyLevel == 2575 then
             Mon = "Skull Slayer"
             LevelQuest = 2
             NameQuest = "TikiQuest3"
             CFrameQuest = CFrame.new(-16661, 105, 1576)
             CFrameMon = CFrame.new(-16885, 114, 1627)
         end
-
         elseif MyLevel >= 2600 then
         Mon = "Reef Bandit"
         LevelQuest = 1
