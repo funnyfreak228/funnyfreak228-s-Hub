@@ -760,7 +760,6 @@ function CheckQuest()
             NameQuest = "TikiQuest3"
             CFrameQuest = CFrame.new(-16661, 105, 1576)
             CFrameMon = CFrame.new(-16885, 114, 1627)
-        end
         elseif MyLevel >= 2600 then
         Mon = "Reef Bandit"
         LevelQuest = 1
@@ -770,7 +769,8 @@ function CheckQuest()
         if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
 		---soon
         end
-        end
+    end
+end
 end
 
 function PopulateBossList()
