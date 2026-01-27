@@ -769,7 +769,7 @@ function CheckQuest()
             ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
 		    ---soon
             ---end
-        elseif MyLevel >= 2649 then
+        elseif MyLevel >= 2625 then
             Mon = "Coral Pirate"
             LevelQuest = 1
             NameQuest = "SubmergedQuest1"
