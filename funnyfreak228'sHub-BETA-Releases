@@ -35,7 +35,7 @@ local tableBoss = {}
 _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
     Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
-    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 300},
+    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 350},
     Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
 }
 
@@ -1663,9 +1663,9 @@ Tabs.Settings:AddToggle("BringMob", {
 Tabs.Settings:AddSlider("BringMobRange", {
     Title = "Bring Mob Range",
     Description = "Distance to bring mobs",
-    Default = 300,
+    Default = 350,
     Min = 100,
-    Max = 300,
+    Max = 350,
     Rounding = 0,
     Callback = function(Value)
         _G.Settings.Setting["Bring Mob Range"] = Value
