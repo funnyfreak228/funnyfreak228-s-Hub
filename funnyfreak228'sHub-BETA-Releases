@@ -787,6 +787,15 @@ function CheckQuest()
             ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
 		    ---soon
             ---end
+        elseif MyLevel == 2675 or MyLevel <= 2699 then
+            Mon = "Ocean Prophet"
+            LevelQuest = 2
+            NameQuest = "SubmergedQuest2"
+            CFrameQuest = CFrame.new(10883.63, -2079.32, 10034.24)
+            CFrameMon = CFrame.new(11005.83, -1880.14, 10112.07)
+            ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+		    ---soon
+            ---end
     end
 end
 end
