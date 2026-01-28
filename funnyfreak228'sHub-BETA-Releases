@@ -760,7 +760,7 @@ function CheckQuest()
             NameQuest = "TikiQuest3"
             CFrameQuest = CFrame.new(-16661, 105, 1576)
             CFrameMon = CFrame.new(-16885, 114, 1627)
-        elseif MyLevel >= 2600 or MyLevel <= 2624 then
+        elseif MyLevel == 2600 or MyLevel <= 2624 then
             Mon = "Reef Bandit"
             LevelQuest = 1
             NameQuest = "SubmergedQuest1"
@@ -769,7 +769,7 @@ function CheckQuest()
             ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
 		    ---soon
             ---end
-        elseif MyLevel >= 2625 or MyLevel <= 2649 then
+        elseif MyLevel == 2625 or MyLevel <= 2649 then
             Mon = "Coral Pirate"
             LevelQuest = 2
             NameQuest = "SubmergedQuest1"
