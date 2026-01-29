@@ -6,25 +6,32 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
+local RS = game:GetService("ReplicatedStorage")
+local LP = game:GetService("Players").LocalPlayer
+local MyLevel = LP.Data.Level.Value
+
+local FirstSea = false
+local SecondSea = false
+local ThirdSea = false
+
+if game.PlaceId == 2753915549 then
+    FirstSea = true
+elseif game.PlaceId == 79091703265657 then
+    SecondSea = true
+elseif game.PlaceId == 100117331123089 then
+    ThirdSea = true
+end
+
 
 local Window = Fluent:CreateWindow({
-    Title = "funnyfreak228's Hub | BETA 1.0.7",
+    Title = "funnyfreak228's Hub | BETA 1.0.8",
     SubTitle = "by @RealFreakxNil",
     TabWidth = 160,
-    Size = UDim2.fromOffset(480, 380),
+    Size = UDim2.fromOffset(540, 420),
     Acrylic = false, 
     Theme = "Darker",
     MinimizeKey = Enum.KeyCode.LeftControl
 })
-
-Fluent:Notify({
-    Title = "Loaded",
-    Content = "funnyfreak228's Hub has loaded successfully.",
-    Duration = 5
-})
-
-local RS = game:GetService("ReplicatedStorage")
-local LP = game:GetService("Players").LocalPlayer
 
 _G.UIElements = {} 
 local errorCount = 0
@@ -35,7 +42,7 @@ local tableBoss = {}
 _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
     Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
-    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 350},
+    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 500},
     Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
 }
 
@@ -218,10 +225,17 @@ function Attack()
         RegisterHit:FireServer(targetData[1], targetData[2])
     end
 end
+function CheckBartiloQuest()
+    if SecondSea then
+      if MyLevel <= 850 then
+      Mon = "Swan Pirate"
+      CFrameMon = CFrame.new(1068, 137, 1322)
+      end
+   end
+end
 
 function CheckQuest()
-    MyLevel = LP.Data.Level.Value
-    if game.PlaceId == 2753915549 then
+    if FirstSea then
         if MyLevel == 1 or MyLevel <= 9 then
             Mon = "Bandit"
             LevelQuest = 1
@@ -391,7 +405,7 @@ function CheckQuest()
             CFrameQuest = CFrame.new(5259, 37, 4050)
             CFrameMon = CFrame.new(5441, 42, 4950)
         end
-    elseif game.PlaceId == 79091703265657 then
+    elseif SecondSea then
         if MyLevel == 700 or MyLevel <= 724 then
             Mon = "Raider"
             LevelQuest = 1
@@ -537,7 +551,7 @@ function CheckQuest()
             CFrameQuest = CFrame.new(-3054, 235, -10142)
             CFrameMon = CFrame.new(-3352, 285, -10534)
         end
-    elseif game.PlaceId == 100117331123089 then
+    elseif ThirdSea then
         if MyLevel == 1500 or MyLevel <= 1524 then
             Mon = "Pirate Millionaire"
             LevelQuest = 1
@@ -766,36 +780,30 @@ function CheckQuest()
             NameQuest = "SubmergedQuest1"
             CFrameQuest = CFrame.new(10780.50, -2087.78, 9261.92)
             CFrameMon = CFrame.new(10611.01, -2071.14, 9305.55)
-            ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
-		    ---soon
-            ---end
         elseif MyLevel == 2625 or MyLevel <= 2649 then
             Mon = "Coral Pirate"
             LevelQuest = 2
             NameQuest = "SubmergedQuest1"
             CFrameQuest = CFrame.new(10780.50, -2087.78, 9261.92)
             CFrameMon = CFrame.new(10611.01, -2071.13, 9305.55)
-            ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
-		    ---soon
-            ---end
         elseif MyLevel == 2650 or MyLevel <= 2674 then
             Mon = "Sea Chanter"
             LevelQuest = 1
             NameQuest = "SubmergedQuest2"
             CFrameQuest = CFrame.new(10883.63, -2079.32, 10034.24)
             CFrameMon = CFrame.new(10670.00, -2057.62, 10050.84)
-            ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
-		    ---soon
-            ---end
         elseif MyLevel == 2675 or MyLevel <= 2699 then
             Mon = "Ocean Prophet"
             LevelQuest = 2
             NameQuest = "SubmergedQuest2"
             CFrameQuest = CFrame.new(10883.63, -2079.32, 10034.24)
             CFrameMon = CFrame.new(11005.83, -1880.14, 10112.07)
-            ---if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
-		    ---soon
-            ---end
+        elseif MyLevel >= 2700  then
+            Mon = "Grand Devotee"
+            LevelQuest = 2
+            NameQuest = "SubmergedQuest3"
+            CFrameQuest = CFrame.new(9637.3076171875, -1988.549560546875, 9616.6962890625)
+            CFrameMon = CFrame.new(9656.166015625, -1987.9212646484375, 10077.5927734375)    
     end
 end
 end
@@ -1672,9 +1680,9 @@ Tabs.Settings:AddToggle("BringMob", {
 Tabs.Settings:AddSlider("BringMobRange", {
     Title = "Bring Mob Range",
     Description = "Distance to bring mobs",
-    Default = 350,
+    Default = 400,
     Min = 100,
-    Max = 350,
+    Max = 500,
     Rounding = 0,
     Callback = function(Value)
         _G.Settings.Setting["Bring Mob Range"] = Value
@@ -1730,7 +1738,7 @@ end)
 
 Tabs.Info:AddParagraph({
     Title = "Script Information",
-    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.7\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
+    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.8\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Death detection\n+ Complete Third Sea levels (2800+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
 })
 
 local function updateStatusDisplay()
@@ -1774,6 +1782,12 @@ spawn(function()
 	wait(1);
 	((require(game.ReplicatedStorage.Notification)).new("<Color=Yellow>[ Sub 2 @RealFreakxNil on YT! ]<Color=/>")):Display();
 end);
+
+Fluent:Notify({
+    Title = "Loaded",
+    Content = "funnyfreak228's Hub has loaded successfully.",
+    Duration = 5
+})
 
 SaveManager:SetLibrary(Fluent)
 SaveManager:SetFolder("FunnyFreak228Hub/configs")
