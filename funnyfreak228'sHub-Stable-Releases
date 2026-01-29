@@ -6,25 +6,32 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
+local RS = game:GetService("ReplicatedStorage")
+local LP = game:GetService("Players").LocalPlayer
+local MyLevel = LP.Data.Level.Value
+
+local FirstSea = false
+local SecondSea = false
+local ThirdSea = false
+
+if game.PlaceId == 2753915549 then
+    FirstSea = true
+elseif game.PlaceId == 79091703265657 then
+    SecondSea = true
+elseif game.PlaceId == 100117331123089 then
+    ThirdSea = true
+end
+
 
 local Window = Fluent:CreateWindow({
-    Title = "funnyfreak228's Hub | Stable 1.0.7",
+    Title = "funnyfreak228's Hub | Stable 1.0.8",
     SubTitle = "by @RealFreakxNil",
     TabWidth = 160,
-    Size = UDim2.fromOffset(480, 380),
+    Size = UDim2.fromOffset(540, 420),
     Acrylic = false, 
     Theme = "Darker",
     MinimizeKey = Enum.KeyCode.LeftControl
 })
-
-Fluent:Notify({
-    Title = "Loaded",
-    Content = "funnyfreak228's Hub has loaded successfully.",
-    Duration = 5
-})
-
-local RS = game:GetService("ReplicatedStorage")
-local LP = game:GetService("Players").LocalPlayer
 
 _G.UIElements = {} 
 local errorCount = 0
@@ -35,7 +42,7 @@ local tableBoss = {}
 _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
     Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
-    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 300},
+    Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 500},
     Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
 }
 
@@ -218,10 +225,17 @@ function Attack()
         RegisterHit:FireServer(targetData[1], targetData[2])
     end
 end
+function CheckBartiloQuest()
+    if SecondSea then
+      if MyLevel <= 850 then
+      Mon = "Swan Pirate"
+      CFrameMon = CFrame.new(1068, 137, 1322)
+      end
+   end
+end
 
 function CheckQuest()
-    MyLevel = LP.Data.Level.Value
-    if game.PlaceId == 2753915549 then
+    if FirstSea then
         if MyLevel == 1 or MyLevel <= 9 then
             Mon = "Bandit"
             LevelQuest = 1
@@ -330,36 +344,54 @@ function CheckQuest()
             NameQuest = "FishmanQuest"
             CFrameQuest = CFrame.new(61122, 18, 1569)
             CFrameMon = CFrame.new(60878, 18, 1543)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(61163.8515625, 11.6796875, 1819.7841796875))
+			end
         elseif MyLevel == 400 or MyLevel <= 449 then
             Mon = "Fishman Commando"
             LevelQuest = 2
             NameQuest = "FishmanQuest"
             CFrameQuest = CFrame.new(61122, 18, 1569)
             CFrameMon = CFrame.new(61922, 18, 1493)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(61163.8515625, 11.6796875, 1819.7841796875))
+			end
         elseif MyLevel == 450 or MyLevel <= 474 then
             Mon = "God's Guard"
             LevelQuest = 1
             NameQuest = "SkyExp1Quest"
             CFrameQuest = CFrame.new(-4721, 843, -1949)
             CFrameMon = CFrame.new(-4710, 845, -1927)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-4607.82275, 872.54248, -1667.55688))
+			end
         elseif MyLevel == 475 or MyLevel <= 524 then
             Mon = "Shanda"
             LevelQuest = 2
             NameQuest = "SkyExp1Quest"
             CFrameQuest = CFrame.new(-7859, 5544, -381)
             CFrameMon = CFrame.new(-7678, 5566, -497)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 19000 then
+		    (game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-7894.62, 5545.75, -380.29))
+			end
         elseif MyLevel == 525 or MyLevel <= 549 then
             Mon = "Royal Squad"
             LevelQuest = 1
             NameQuest = "SkyExp2Quest"
             CFrameQuest = CFrame.new(-7906, 5634, -1411)
             CFrameMon = CFrame.new(-7624, 5658, -1467)
+             if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 19000 then
+			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-7894.62, 5545.75, -380.29))
+			end
         elseif MyLevel == 550 or MyLevel <= 624 then
             Mon = "Royal Soldier"
             LevelQuest = 2
             NameQuest = "SkyExp2Quest"
             CFrameQuest = CFrame.new(-7906, 5634, -1411)
             CFrameMon = CFrame.new(-7836, 5645, -1790)
+             if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 19000 then
+			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-7894.62, 5545.75, -380.29))
+			end
         elseif MyLevel == 625 or MyLevel <= 649 then
             Mon = "Galley Pirate"
             LevelQuest = 1
@@ -373,7 +405,7 @@ function CheckQuest()
             CFrameQuest = CFrame.new(5259, 37, 4050)
             CFrameMon = CFrame.new(5441, 42, 4950)
         end
-    elseif game.PlaceId == 79091703265657 then
+    elseif SecondSea then
         if MyLevel == 700 or MyLevel <= 724 then
             Mon = "Raider"
             LevelQuest = 1
@@ -464,24 +496,36 @@ function CheckQuest()
             NameQuest = "ShipQuest1"
             CFrameQuest = CFrame.new(1037, 125, 32911)
             CFrameMon = CFrame.new(1212, 150, 33059)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1275 or MyLevel <= 1299 then
             Mon = "Ship Engineer"
             LevelQuest = 2
             NameQuest = "ShipQuest1"
             CFrameQuest = CFrame.new(1037, 125, 32911)
             CFrameMon = CFrame.new(919, 43, 32779)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1300 or MyLevel <= 1324 then
             Mon = "Ship Steward"
             LevelQuest = 1
             NameQuest = "ShipQuest2"
             CFrameQuest = CFrame.new(968, 125, 33244)
             CFrameMon = CFrame.new(919, 129, 33436)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1325 or MyLevel <= 1349 then
             Mon = "Ship Officer"
             LevelQuest = 2
             NameQuest = "ShipQuest2"
             CFrameQuest = CFrame.new(968, 125, 33244)
             CFrameMon = CFrame.new(1036, 181, 33315)
+            if _G.Settings.Main["Auto Farm"] and (CFrameQuest.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 10000 then
+				(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+			end
         elseif MyLevel == 1350 or MyLevel <= 1374 then
             Mon = "Arctic Warrior"
             LevelQuest = 1
@@ -507,7 +551,7 @@ function CheckQuest()
             CFrameQuest = CFrame.new(-3054, 235, -10142)
             CFrameMon = CFrame.new(-3352, 285, -10534)
         end
-    elseif game.PlaceId == 100117331123089 then
+    elseif ThirdSea then
         if MyLevel == 1500 or MyLevel <= 1524 then
             Mon = "Pirate Millionaire"
             LevelQuest = 1
@@ -724,14 +768,44 @@ function CheckQuest()
             NameQuest = "TikiQuest3"
             CFrameQuest = CFrame.new(-16661, 105, 1576)
             CFrameMon = CFrame.new(-16587, 154, 1533)
-        elseif MyLevel >= 2575 then
+        elseif MyLevel == 2575 or MyLevel <= 2599 then
             Mon = "Skull Slayer"
             LevelQuest = 2
             NameQuest = "TikiQuest3"
             CFrameQuest = CFrame.new(-16661, 105, 1576)
             CFrameMon = CFrame.new(-16885, 114, 1627)
-        end
+        elseif MyLevel == 2600 or MyLevel <= 2624 then
+            Mon = "Reef Bandit"
+            LevelQuest = 1
+            NameQuest = "SubmergedQuest1"
+            CFrameQuest = CFrame.new(10780.50, -2087.78, 9261.92)
+            CFrameMon = CFrame.new(10611.01, -2071.14, 9305.55)
+        elseif MyLevel == 2625 or MyLevel <= 2649 then
+            Mon = "Coral Pirate"
+            LevelQuest = 2
+            NameQuest = "SubmergedQuest1"
+            CFrameQuest = CFrame.new(10780.50, -2087.78, 9261.92)
+            CFrameMon = CFrame.new(10611.01, -2071.13, 9305.55)
+        elseif MyLevel == 2650 or MyLevel <= 2674 then
+            Mon = "Sea Chanter"
+            LevelQuest = 1
+            NameQuest = "SubmergedQuest2"
+            CFrameQuest = CFrame.new(10883.63, -2079.32, 10034.24)
+            CFrameMon = CFrame.new(10670.00, -2057.62, 10050.84)
+        elseif MyLevel == 2675 or MyLevel <= 2699 then
+            Mon = "Ocean Prophet"
+            LevelQuest = 2
+            NameQuest = "SubmergedQuest2"
+            CFrameQuest = CFrame.new(10883.63, -2079.32, 10034.24)
+            CFrameMon = CFrame.new(11005.83, -1880.14, 10112.07)
+        elseif MyLevel >= 2700  then
+            Mon = "Grand Devotee"
+            LevelQuest = 2
+            NameQuest = "SubmergedQuest3"
+            CFrameQuest = CFrame.new(9637.3076171875, -1988.549560546875, 9616.6962890625)
+            CFrameMon = CFrame.new(9656.166015625, -1987.9212646484375, 10077.5927734375)    
     end
+end
 end
 
 function PopulateBossList()
@@ -880,6 +954,16 @@ end)
 
 --- farm loop wowwwwwwww (extra w's)
 spawn(function()
+    while task.wait(0.5) do
+        if _G.Settings.Setting["Bring Mob"] then
+            pcall(function()
+                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", _G.Settings.Setting["Bring Mob Range"])
+            end)
+        end
+    end
+end)
+
+spawn(function()
     RunService.Stepped:Connect(function()
         if _G.Settings.Main["Auto Farm"] and LP.Character then
             local hrp = LP.Character:FindFirstChild("HumanoidRootPart")
@@ -892,8 +976,15 @@ spawn(function()
             
             if _G.Settings.Setting["Bring Mob"] and Mon then
                 pcall(function()
+                    local TargetMob = nil
+                    
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                         if v.Name == Mon and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                            if not TargetMob then
+                                TargetMob = v
+                            end
+                            
+                            v.HumanoidRootPart.CFrame = TargetMob.HumanoidRootPart.CFrame
                             v.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             v.HumanoidRootPart.CanCollide = false
                             v.Humanoid.WalkSpeed = 0
@@ -913,7 +1004,7 @@ spawn(function()
 
     while wait(0.2) do
         if _G.Settings.Main["Auto Farm"] then
-            local success, err = pcall(function()
+            pcall(function()
                 CheckQuest()
                 
                 if not Mon or not NameQuest or not LevelQuest then
@@ -944,6 +1035,7 @@ spawn(function()
                                             local Pos = CFrame.new(0, _G.Settings.Setting["Farm Distance"], 0)
                                             topos(v.HumanoidRootPart.CFrame * Pos)
                                             
+                                            v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
                                             v.HumanoidRootPart.CanCollide = false
                                             v.Humanoid.WalkSpeed = 0
                                             v.Humanoid.JumpPower = 0
@@ -967,7 +1059,6 @@ spawn(function()
                                                         end
                                                     end
                                                 end
-                                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", _G.Settings.Setting["Bring Mob Range"])
                                             end
                                             
                                             Attack()
@@ -984,14 +1075,10 @@ spawn(function()
                     end
                 end
             end)
-            
-            if not success then
-                warn("Auto Farm Error:", err)
-            end
         end
     end
 end)
-                             
+
 spawn(function()
 
 RunService.Stepped:Connect(function()
@@ -1593,9 +1680,9 @@ Tabs.Settings:AddToggle("BringMob", {
 Tabs.Settings:AddSlider("BringMobRange", {
     Title = "Bring Mob Range",
     Description = "Distance to bring mobs",
-    Default = 300,
+    Default = 400,
     Min = 100,
-    Max = 300,
+    Max = 500,
     Rounding = 0,
     Callback = function(Value)
         _G.Settings.Setting["Bring Mob Range"] = Value
@@ -1651,7 +1738,7 @@ end)
 
 Tabs.Info:AddParagraph({
     Title = "Script Information",
-    Content = "Dev: @RealFreakxNil\nVersion: Stable 1.0.7\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Tween cancellation on toggle off\n+ Death detection (auto-restart)\n+ Complete Third Sea levels (2575+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
+    Content = "Dev: @RealFreakxNil\nVersion: Stable 1.0.8\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Death detection\n+ Complete Third Sea levels (2800+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
 })
 
 local function updateStatusDisplay()
@@ -1695,6 +1782,12 @@ spawn(function()
 	wait(1);
 	((require(game.ReplicatedStorage.Notification)).new("<Color=Yellow>[ Sub 2 @RealFreakxNil on YT! ]<Color=/>")):Display();
 end);
+
+Fluent:Notify({
+    Title = "Loaded",
+    Content = "funnyfreak228's Hub has loaded successfully.",
+    Duration = 5
+})
 
 SaveManager:SetLibrary(Fluent)
 SaveManager:SetFolder("FunnyFreak228Hub/configs")
