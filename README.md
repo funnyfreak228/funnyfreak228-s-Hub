@@ -9,5 +9,5 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/funnyfreak228/funnyfr
 ```
 # Load the beta script (Usually more features)
 ``` lua block
-```loadstring(game:HttpGet("https://raw.githubusercontent.com/funnyfreak228/funnyfreak228-s-Hub/refs/heads/main/funnyfreak228'sHub-BETA-Releases", true))()```
+loadstring(game:HttpGet("https://raw.githubusercontent.com/funnyfreak228/funnyfreak228-s-Hub/refs/heads/main/funnyfreak228'sHub-BETA-Releases", true))()
 ```
