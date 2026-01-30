@@ -24,7 +24,7 @@ end
 
 
 local Window = Fluent:CreateWindow({
-    Title = "funnyfreak228's Hub | BETA 1.0.8",
+    Title = "funnyfreak228's Hub | BETA 1.0.9",
     SubTitle = "by @RealFreakxNil",
     TabWidth = 160,
     Size = UDim2.fromOffset(540, 420),
@@ -43,7 +43,8 @@ _G.Settings = {
     Main = {["Auto Farm"] = false, ["Auto Farm Boss"] = false, ["Auto Farm All Bosses"] = false, ["Select Boss"] = "None", ["Select Weapon"] = "Melee", ["Chest Farm"] = false, ["Chest Farm Mode"] = "Tween"},
     Combat = {["Kill Aura"] = false, ["Aura Range"] = 60, ["Aura Target"] = "All"},
     Setting = {["Tween Speed"] = 300, ["Farm Distance"] = 35, ["Auto Haki"] = true, ["Bring Mob"] = true, ["Bring Mob Range"] = 500},
-    Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"}
+    Stats = {["Enabled"] = false, ["Select Stat"] = "Melee"},
+    Visual = {["ESP Players"] = false, ["ESP Fruits"] = false}
 }
 
 LP.CharacterAdded:Connect(function(character)
@@ -940,6 +941,449 @@ spawn(function()
 end)
 
 spawn(function()
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local LocalPlayer = Players.LocalPlayer
+    
+    local ESPObjects = {}
+    local creationQueue = {}
+    local deletionQueue = {}
+    local isProcessingQueue = false
+    
+    local function round(num)
+        return math.floor(num + 0.5)
+    end
+    
+    local function getHealthColor(healthPercent)
+        if healthPercent > 66 then
+            return Color3.fromRGB(76, 209, 55)
+        elseif healthPercent > 33 then
+            return Color3.fromRGB(241, 196, 15)
+        else
+            return Color3.fromRGB(231, 76, 60)
+        end
+    end
+    
+    local function getPlayerColor(player)
+        if not LocalPlayer.Team or not player.Team then
+            return Color3.fromRGB(255, 200, 100)
+        end
+        
+        if player.Team == LocalPlayer.Team then
+            return Color3.fromRGB(85, 255, 127)
+        else
+            return Color3.fromRGB(255, 85, 85)
+        end
+    end
+    
+    local function createESP(player)
+        if player == LocalPlayer then return end
+        if ESPObjects[player] then return end
+        
+        local character = player.Character
+        if not character then return end
+        
+        local head = character:FindFirstChild("Head")
+        if not head then return end
+        
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "ESP_" .. player.Name
+        billboard.AlwaysOnTop = true
+        billboard.Size = UDim2.new(0, 200, 0, 150)
+        billboard.StudsOffset = Vector3.new(0, 3, 0)
+        billboard.Parent = head
+        
+        local mainFrame = Instance.new("Frame")
+        mainFrame.Size = UDim2.new(1, 0, 1, 0)
+        mainFrame.BackgroundTransparency = 1
+        mainFrame.Parent = billboard
+        
+        local avatarImage = Instance.new("ImageLabel")
+        avatarImage.Size = UDim2.new(0, 80, 0, 80)
+        avatarImage.Position = UDim2.new(0.5, -40, 0, 0)
+        avatarImage.BackgroundTransparency = 1
+        avatarImage.BorderSizePixel = 0
+        avatarImage.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+        avatarImage.Parent = mainFrame
+        
+        local avatarImageCorner = Instance.new("UICorner")
+        avatarImageCorner.CornerRadius = UDim.new(0, 8)
+        avatarImageCorner.Parent = avatarImage
+        
+        local nameLabel = Instance.new("TextLabel")
+        nameLabel.Size = UDim2.new(1, 0, 0, 20)
+        nameLabel.Position = UDim2.new(0, 0, 0, 85)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Text = player.Name
+        nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        nameLabel.TextSize = 16
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.TextStrokeTransparency = 0.5
+        nameLabel.Parent = mainFrame
+        
+        local distanceLabel = Instance.new("TextLabel")
+        distanceLabel.Size = UDim2.new(1, 0, 0, 18)
+        distanceLabel.Position = UDim2.new(0, 0, 0, 105)
+        distanceLabel.BackgroundTransparency = 1
+        distanceLabel.Text = "0 studs"
+        distanceLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        distanceLabel.TextSize = 14
+        distanceLabel.Font = Enum.Font.Gotham
+        distanceLabel.TextStrokeTransparency = 0.5
+        distanceLabel.Parent = mainFrame
+        
+        local healthBarBG = Instance.new("Frame")
+        healthBarBG.Size = UDim2.new(0, 100, 0, 8)
+        healthBarBG.Position = UDim2.new(0.5, -50, 0, 125)
+        healthBarBG.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+        healthBarBG.BorderSizePixel = 0
+        healthBarBG.Parent = mainFrame
+        
+        local healthBarCorner = Instance.new("UICorner")
+        healthBarCorner.CornerRadius = UDim.new(1, 0)
+        healthBarCorner.Parent = healthBarBG
+        
+        local healthBar = Instance.new("Frame")
+        healthBar.Size = UDim2.new(1, 0, 1, 0)
+        healthBar.BackgroundColor3 = Color3.fromRGB(76, 209, 55)
+        healthBar.BorderSizePixel = 0
+        healthBar.Parent = healthBarBG
+        
+        local healthBarCorner2 = Instance.new("UICorner")
+        healthBarCorner2.CornerRadius = UDim.new(1, 0)
+        healthBarCorner2.Parent = healthBar
+        
+        local healthText = Instance.new("TextLabel")
+        healthText.Size = UDim2.new(1, 0, 1, 0)
+        healthText.BackgroundTransparency = 1
+        healthText.Text = "100%"
+        healthText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        healthText.TextSize = 10
+        healthText.Font = Enum.Font.GothamBold
+        healthText.TextStrokeTransparency = 0.3
+        healthText.Parent = healthBarBG
+        
+        ESPObjects[player] = {
+            Billboard = billboard,
+            NameLabel = nameLabel,
+            DistanceLabel = distanceLabel,
+            HealthBar = healthBar,
+            HealthText = healthText,
+            Character = character
+        }
+    end
+    
+    local function removeESP(player)
+        if ESPObjects[player] then
+            if ESPObjects[player].Billboard then
+                ESPObjects[player].Billboard:Destroy()
+            end
+            ESPObjects[player] = nil
+        end
+    end
+    
+    local function updateESP(player)
+        if not _G.Settings.Visual["ESP Players"] then return end
+        if player == LocalPlayer then return end
+        
+        local espData = ESPObjects[player]
+        if not espData then return end
+        
+        local character = player.Character
+        if not character or not character:FindFirstChild("HumanoidRootPart") or not character:FindFirstChild("Humanoid") then
+            return
+        end
+        
+        if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            return
+        end
+        
+        local distance = (character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+        local humanoid = character.Humanoid
+        local healthPercent = round((humanoid.Health / humanoid.MaxHealth) * 100)
+        
+        espData.DistanceLabel.Text = round(distance) .. " studs"
+        espData.HealthBar.Size = UDim2.new(healthPercent / 100, 0, 1, 0)
+        espData.HealthBar.BackgroundColor3 = getHealthColor(healthPercent)
+        espData.HealthText.Text = healthPercent .. "%"
+        
+        local playerColor = getPlayerColor(player)
+        espData.NameLabel.TextColor3 = playerColor
+    end
+    
+    spawn(function()
+        while true do
+            task.wait(0.05)
+            
+            if #creationQueue > 0 then
+                local player = table.remove(creationQueue, 1)
+                if player and player.Parent and _G.Settings.Visual["ESP Players"] then
+                    pcall(function()
+                        createESP(player)
+                    end)
+                end
+            end
+            
+            if #deletionQueue > 0 then
+                local player = table.remove(deletionQueue, 1)
+                if player then
+                    pcall(function()
+                        removeESP(player)
+                    end)
+                end
+            end
+        end
+    end)
+    
+    Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function(character)
+            if _G.Settings.Visual["ESP Players"] then
+                wait(0.5)
+                table.insert(creationQueue, player)
+            end
+        end)
+    end)
+    
+    Players.PlayerRemoving:Connect(function(player)
+        table.insert(deletionQueue, player)
+    end)
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            player.CharacterAdded:Connect(function(character)
+                if _G.Settings.Visual["ESP Players"] then
+                    wait(0.5)
+                    table.insert(creationQueue, player)
+                end
+            end)
+        end
+    end
+    
+    local lastUpdate = tick()
+    local lastESPState = _G.Settings.Visual["ESP Players"]
+    
+    RunService.RenderStepped:Connect(function()
+        if tick() - lastUpdate < 0.1 then return end
+        lastUpdate = tick()
+        
+        local currentESPState = _G.Settings.Visual["ESP Players"]
+        
+        if currentESPState and not lastESPState then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    table.insert(creationQueue, player)
+                end
+            end
+        elseif not currentESPState and lastESPState then
+            for player, _ in pairs(ESPObjects) do
+                table.insert(deletionQueue, player)
+            end
+        end
+        
+        lastESPState = currentESPState
+        
+        if currentESPState then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    if ESPObjects[player] then
+                        updateESP(player)
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+spawn(function()
+    local RunService = game:GetService("RunService")
+    local Workspace = game:GetService("Workspace")
+    
+    local FruitESPObjects = {}
+    local fruitCreationQueue = {}
+    local fruitDeletionQueue = {}
+    
+    local function round(num)
+        return math.floor(num + 0.5)
+    end
+    
+    local function createFruitESP(fruit)
+        if FruitESPObjects[fruit] then return end
+        if not fruit:IsA("Model") and not fruit:IsA("Part") and not fruit:IsA("MeshPart") then return end
+        
+        local fruitPart = fruit:IsA("Model") and (fruit:FindFirstChild("Handle") or fruit.PrimaryPart or fruit:FindFirstChildWhichIsA("Part")) or fruit
+        if not fruitPart then return end
+        
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "FruitESP_" .. fruit.Name
+        billboard.AlwaysOnTop = true
+        billboard.Size = UDim2.new(0, 200, 0, 60)
+        billboard.StudsOffset = Vector3.new(0, 3, 0)
+        billboard.Parent = fruitPart
+        
+        local mainFrame = Instance.new("Frame")
+        mainFrame.Size = UDim2.new(1, 0, 1, 0)
+        mainFrame.BackgroundTransparency = 1
+        mainFrame.Parent = billboard
+        
+        local nameLabel = Instance.new("TextLabel")
+        nameLabel.Size = UDim2.new(1, 0, 0, 25)
+        nameLabel.Position = UDim2.new(0, 0, 0, 0)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Text = fruit.Name
+        nameLabel.TextColor3 = Color3.fromRGB(255, 170, 0)
+        nameLabel.TextSize = 18
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.TextStrokeTransparency = 0.5
+        nameLabel.Parent = mainFrame
+        
+        local distanceLabel = Instance.new("TextLabel")
+        distanceLabel.Size = UDim2.new(1, 0, 0, 20)
+        distanceLabel.Position = UDim2.new(0, 0, 0, 28)
+        distanceLabel.BackgroundTransparency = 1
+        distanceLabel.Text = "0 studs"
+        distanceLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        distanceLabel.TextSize = 14
+        distanceLabel.Font = Enum.Font.Gotham
+        distanceLabel.TextStrokeTransparency = 0.5
+        distanceLabel.Parent = mainFrame
+        
+        FruitESPObjects[fruit] = {
+            Billboard = billboard,
+            DistanceLabel = distanceLabel,
+            Part = fruitPart
+        }
+    end
+    
+    local function removeFruitESP(fruit)
+        if FruitESPObjects[fruit] then
+            if FruitESPObjects[fruit].Billboard then
+                FruitESPObjects[fruit].Billboard:Destroy()
+            end
+            FruitESPObjects[fruit] = nil
+        end
+    end
+    
+    local function updateFruitESP(fruit)
+        if not _G.Settings.Visual["ESP Fruits"] then return end
+        
+        local espData = FruitESPObjects[fruit]
+        if not espData then return end
+        
+        if not fruit.Parent then
+            table.insert(fruitDeletionQueue, fruit)
+            return
+        end
+        
+        local player = game:GetService("Players").LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+            return
+        end
+        
+        local fruitPos = espData.Part.Position
+        local distance = (fruitPos - player.Character.HumanoidRootPart.Position).Magnitude
+        
+        espData.DistanceLabel.Text = round(distance) .. " studs"
+    end
+    
+    spawn(function()
+        while true do
+            task.wait(0.05)
+            
+            if #fruitCreationQueue > 0 then
+                local fruit = table.remove(fruitCreationQueue, 1)
+                if fruit and fruit.Parent and _G.Settings.Visual["ESP Fruits"] then
+                    pcall(function()
+                        createFruitESP(fruit)
+                    end)
+                end
+            end
+            
+            if #fruitDeletionQueue > 0 then
+                local fruit = table.remove(fruitDeletionQueue, 1)
+                if fruit then
+                    pcall(function()
+                        removeFruitESP(fruit)
+                    end)
+                end
+            end
+        end
+    end)
+    
+    local function scanForFruits()
+        for _, v in pairs(Workspace:GetChildren()) do
+            if v.Name and string.find(v.Name, "Fruit") then
+                if not FruitESPObjects[v] and _G.Settings.Visual["ESP Fruits"] then
+                    table.insert(fruitCreationQueue, v)
+                end
+            end
+        end
+        
+        for _, folder in pairs(Workspace:GetChildren()) do
+            if folder:IsA("Folder") or folder:IsA("Model") then
+                for _, v in pairs(folder:GetChildren()) do
+                    if v.Name and string.find(v.Name, "Fruit") then
+                        if not FruitESPObjects[v] and _G.Settings.Visual["ESP Fruits"] then
+                            table.insert(fruitCreationQueue, v)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    Workspace.ChildAdded:Connect(function(child)
+        if _G.Settings.Visual["ESP Fruits"] then
+            task.wait(0.1)
+            if child.Name and string.find(child.Name, "Fruit") then
+                table.insert(fruitCreationQueue, child)
+            end
+        end
+    end)
+    
+    Workspace.ChildRemoved:Connect(function(child)
+        if FruitESPObjects[child] then
+            table.insert(fruitDeletionQueue, child)
+        end
+    end)
+    
+    local lastUpdate = tick()
+    local lastFruitESPState = _G.Settings.Visual["ESP Fruits"]
+    local lastScan = tick()
+    
+    RunService.RenderStepped:Connect(function()
+        if tick() - lastUpdate < 0.1 then return end
+        lastUpdate = tick()
+        
+        local currentFruitESPState = _G.Settings.Visual["ESP Fruits"]
+        
+        if currentFruitESPState and not lastFruitESPState then
+            scanForFruits()
+        elseif not currentFruitESPState and lastFruitESPState then
+            for fruit, _ in pairs(FruitESPObjects) do
+                table.insert(fruitDeletionQueue, fruit)
+            end
+        end
+        
+        lastFruitESPState = currentFruitESPState
+        
+        if currentFruitESPState then
+            if tick() - lastScan > 5 then
+                scanForFruits()
+                lastScan = tick()
+            end
+            
+            for fruit, _ in pairs(FruitESPObjects) do
+                if fruit and fruit.Parent then
+                    updateFruitESP(fruit)
+                else
+                    table.insert(fruitDeletionQueue, fruit)
+                end
+            end
+        end
+    end)
+end)
+
+spawn(function()
     while task.wait(0.7) do
         if _G.Settings.Stats["Enabled"] then
             pcall(function()
@@ -1364,6 +1808,7 @@ local Tabs = {
     Combat = Window:AddTab({ Title = "Combat", Icon = "sword" }),
     Raid = Window:AddTab({ Title = "Raid", Icon = "factory" }),
     Dungeons = Window:AddTab({ Title = "Dungeons", Icon = "skull" }),
+    Visual = Window:AddTab({ Title = "Visual", Icon = "eye" }),
     Shop = Window:AddTab({ Title = "Shop", Icon = "shopping-cart" }),
     Stats = Window:AddTab({ Title = "Stats", Icon = "bar-chart" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }),
@@ -1371,9 +1816,23 @@ local Tabs = {
     Info = Window:AddTab({ Title = "Info", Icon = "info" }) --- Always last pls ;p
 }
 
+Tabs.Main:AddSection("Information")
+
 local StatusParagraph = Tabs.Main:AddParagraph({
     Title = "Status Tracker",
     Content = "Status: ???\nTime Played: 00:00:00\nState: Idle"
+})
+
+Tabs.Main:AddButton({
+    Title = "Join Community (Discord)",
+    Callback = function()
+       setclipboard("https://discord.gg/fEfaMcjQva")
+       Fluent:Notify({
+       Title = "Copied",
+       Content = "Paste the link in discord to join our awsome community!",
+       Duration = 5
+       })
+    end
 })
 
 Tabs.Main:AddSection("Auto Farming")
@@ -1397,6 +1856,22 @@ Tabs.Main:AddDropdown("SelectWeapon", {
     Default = "Melee",
     Callback = function(Value)
         _G.Settings.Main["Select Weapon"] = Value
+    end
+})
+Tabs.Visual:AddSection("ESP")
+Tabs.Visual:AddToggle("ESPPlayers", {
+    Title = "ESP Players",
+    Default = false,
+    Callback = function(Value)
+        _G.Settings.Visual["ESP Players"] = Value
+    end
+})
+
+Tabs.Visual:AddToggle("ESP Fruits", {
+    Title = "ESP Fruits & Fruit Dealers",
+    Default = false,
+    Callback = function(Value)
+        _G.Settings.Visual["ESP Fruits"] = Value
     end
 })
 
@@ -1738,7 +2213,7 @@ end)
 
 Tabs.Info:AddParagraph({
     Title = "Script Information",
-    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.8\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Death detection\n+ Complete Third Sea levels (2800+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
+    Content = "Dev: @RealFreakxNil\nVersion: BETA 1.0.9\nLibrary: Fluent (Stable UI)\n\nChangelog:\n+ Death detection\n+ Complete Third Sea levels (2800+)\n+ Fixed Outdated Quests\n+ Added BringMob\n+ Added Shop\n+ Anti Cheat Bypass"
 })
 
 local function updateStatusDisplay()
