@@ -1371,9 +1371,23 @@ local Tabs = {
     Info = Window:AddTab({ Title = "Info", Icon = "info" }) --- Always last pls ;p
 }
 
+Tabs.Main:AddSection("Information")
+
 local StatusParagraph = Tabs.Main:AddParagraph({
     Title = "Status Tracker",
     Content = "Status: ???\nTime Played: 00:00:00\nState: Idle"
+})
+
+Tabs.Main:AddButton({
+    Title = "Join Community (Discord)",
+    Callback = function()
+       setclipboard("https://discord.gg/fEfaMcjQva")
+       Fluent:Notify({
+       Title = "Copied",
+       Content = "Paste the link in discord to join our awsome community!",
+       Duration = 5
+       })
+    end
 })
 
 Tabs.Main:AddSection("Auto Farming")
