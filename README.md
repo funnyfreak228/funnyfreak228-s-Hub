@@ -8,4 +8,6 @@ This is a solo project, so developing takes time, if possible, it would be awsom
 loadstring(game:HttpGet("https://raw.githubusercontent.com/funnyfreak228/funnyfreak228-s-Hub/refs/heads/main/funnyfreak228'sHub-Stable-Releases", true))()
 ```
 # Load the beta script (Usually more features)
+``` lua block
 ```loadstring(game:HttpGet("https://raw.githubusercontent.com/funnyfreak228/funnyfreak228-s-Hub/refs/heads/main/funnyfreak228'sHub-BETA-Releases", true))()```
+```
