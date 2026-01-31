@@ -1087,7 +1087,12 @@ spawn(function()
         if player == LocalPlayer then return end
         
         local espData = ESPObjects[player]
-        if not espData then return end
+        if not espData then 
+            if player.Character and _G.Settings.Visual["ESP Players"] then
+                table.insert(creationQueue, player)
+            end
+            return 
+        end
         
         local character = player.Character
         if not character or not character:FindFirstChild("HumanoidRootPart") or not character:FindFirstChild("Humanoid") then
