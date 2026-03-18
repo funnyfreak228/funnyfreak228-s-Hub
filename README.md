@@ -1,7 +1,6 @@
-# funnyfreak228-s-Hub (Stable & BETA 1.0.9 Released!)
+# funnyfreak228-s-Hub (Discontinued!)
 # The One And ONLY Open-Source Bloxfruits script! 
-This is a solo project, so developing takes time, if possible, it would be awsome if roblox developers started taking part on this project!
-(Contributions are appriciated)
+This was just a solo project i worked on my free time, i have completely discontinued it and probably wont update it anymore, good luck!
 
 # Load the script
 ```lua block
