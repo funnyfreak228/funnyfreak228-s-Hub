@@ -26,7 +26,7 @@ end
 
 local Window = Fluent:CreateWindow({
     Title = "funnyfreak228's Hub | Stable 1.0.9",
-    SubTitle = "by @RealFreakxNil",
+    SubTitle = "by @funnyfreak228",
     TabWidth = 160,
     Size = UDim2.fromOffset(540, 420),
     Acrylic = false, 
